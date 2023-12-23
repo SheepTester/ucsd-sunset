@@ -1,0 +1,32 @@
+{
+  "name": "ucsd-sunset",
+  "version": "1.0.0",
+  "description": "🌅 SunSET for UCSD: A crowd-sourced dataset of grade distributions submitted by students from their academic histories, to replace CAPEs' \"Grades Students Received,\" which SETs no longer publish.",
+  "main": "index.js",
+  "scripts": {
+    "build": "cp -a static/. dist/ && esbuild --bundle src/index.tsx --outdir=dist --supported:nesting=false --minify",
+    "clean": "rm -rf dist",
+    "dev": "esbuild --bundle src/index.tsx --outdir=static --servedir=static --sourcemap",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SheepTester/ucsd-sunset.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SheepTester/ucsd-sunset/issues"
+  },
+  "homepage": "https://github.com/SheepTester/ucsd-sunset#readme",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "esbuild": "^0.19.10"
+  }
+}

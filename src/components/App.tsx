@@ -38,6 +38,19 @@ export function App ({ sourceUrl }: AppProps) {
 
   return (
     <>
+      <header className='hero'>
+        <div className='hero-content'>
+          <h1 className='title'>
+            <strong className='app-name'>SunSET</strong> for UCSD
+          </h1>
+          <p className='subtitle'>Furthering the legacy of CAPEs</p>
+          <img
+            className='sun-god'
+            src='./sunny-g-silhouette.svg'
+            alt='A silhouette of Sunny G. looking towards the sunset.'
+          />
+        </div>
+      </header>
       <main>
         {Object.entries(distributions)
           .sort((a, b) => courseCodeComparator.compare(a[0], b[0]))

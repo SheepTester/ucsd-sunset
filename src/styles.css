@@ -8,9 +8,44 @@ body {
   color: #e7e8f0;
 }
 
+.hero {
+  height: 600px;
+  display: flex;
+  justify-content: center;
+  background-image: linear-gradient(#96a7b9 50%, #f18032);
+  background-image: linear-gradient(#778391, #93a3ab 10%, #b1bcbb 60%, #f18032);
+  background-image: linear-gradient(in lab, #6697e1, #b7d4ed 70%, #eab64c);
+  background-size: 100% 500px;
+  background-repeat: no-repeat;
+}
+.hero-content {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  color: #0b0e23;
+  position: relative;
+}
+.title {
+  font-weight: normal;
+  margin: 0;
+}
+.subtitle {
+  margin: 0;
+}
+.sun-god {
+  position: absolute;
+  bottom: 100px;
+  height: 300px;
+  left: 220px;
+}
+
 .course {
   display: flex;
   align-items: flex-start;
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;

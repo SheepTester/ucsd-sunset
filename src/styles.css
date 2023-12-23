@@ -8,6 +8,15 @@ body {
   color: #e7e8f0;
 }
 
+.hero-content,
+.course {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 20px 40px;
+}
+
 .hero {
   height: 600px;
   display: flex;
@@ -19,36 +28,43 @@ body {
   background-repeat: no-repeat;
 }
 .hero-content {
-  width: 100%;
-  max-width: 1200px;
   display: flex;
   justify-content: center;
   flex-direction: column;
   gap: 10px;
   color: #0b0e23;
   position: relative;
+  z-index: 0;
 }
 .title {
   font-weight: normal;
   margin: 0;
+  font-size: 36px;
 }
 .subtitle {
   margin: 0;
 }
 .sun-god {
   position: absolute;
+  z-index: -1;
   bottom: 100px;
   height: 300px;
-  left: 220px;
+  left: 300px;
+}
+@media (max-width: 570px) {
+  .hero {
+    background-size: 100% 350px;
+    height: 400px;
+  }
+  .sun-god {
+    display: none;
+  }
 }
 
 .course {
   display: flex;
   align-items: flex-start;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+  gap: 20px;
 }
 .course-code {
   width: 150px;
@@ -82,6 +98,26 @@ body {
   font-size: 10px;
   text-align: right;
   margin: 0;
+}
+@media (max-width: 600px) {
+  .course {
+    flex-direction: column;
+  }
+  .course-code {
+    position: static;
+  }
+  .professor-name {
+    font-size: 20px;
+  }
+  .term-name {
+    font-size: 16px;
+  }
+}
+@media (max-width: 450px) {
+  .hero-content,
+  .course {
+    padding: 20px;
+  }
 }
 
 /* TEMP */

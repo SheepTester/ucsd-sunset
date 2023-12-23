@@ -43,7 +43,7 @@ export function App ({ sourceUrl }: AppProps) {
           <h1 className='title'>
             <strong className='app-name'>SunSET</strong> for UCSD
           </h1>
-          <p className='subtitle'>Furthering the legacy of CAPEs</p>
+          <p className='subtitle'>Furthering the legacy of CAPEs.</p>
           <img
             className='sun-god'
             src='./sunny-g-silhouette.svg'

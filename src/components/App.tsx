@@ -44,6 +44,9 @@ export function App ({ sourceUrl }: AppProps) {
             <strong className='app-name'>SunSET</strong> for UCSD
           </h1>
           <p className='subtitle'>Furthering the legacy of CAPEs.</p>
+          <button type='button' className='contribute-btn'>
+            Contribute
+          </button>
           <img
             className='sun-god'
             src='./sunny-g-silhouette.svg'

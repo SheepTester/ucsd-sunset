@@ -30,6 +30,7 @@ body {
 .hero-content {
   display: flex;
   justify-content: center;
+  align-items: flex-start;
   flex-direction: column;
   gap: 10px;
   color: #0b0e23;
@@ -43,6 +44,26 @@ body {
 }
 .subtitle {
   margin: 0;
+}
+.contribute-btn {
+  margin-top: 10px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  background-color: #f0cb2d;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s;
+  &:hover {
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  }
+  &:active {
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0.3);
+  }
 }
 .sun-god {
   position: absolute;

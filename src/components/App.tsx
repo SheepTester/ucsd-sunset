@@ -7,6 +7,8 @@ import {
 } from '../util/distributions'
 import { Modal } from './Modal'
 import bookmarklet from '../data/bookmarklet.raw.js'
+import bookmarkletDialog from '../data/bookmarklet-dialog-injection.html'
+import { JavaScriptUrl } from './JavaScriptUrl'
 
 const courseCodeComparator = new Intl.Collator('en-US', { numeric: true })
 
@@ -51,7 +53,7 @@ export function App ({ sourceUrl }: AppProps) {
           <p className='subtitle'>Furthering the legacy of CAPEs.</p>
           <button
             type='button'
-            className='contribute-btn'
+            className='button'
             onClick={() => setContributeOpen(true)}
           >
             Contribute
@@ -125,6 +127,19 @@ export function App ({ sourceUrl }: AppProps) {
         <ol>
           <li>
             <p>Drag the following link into your bookmarks bar.</p>
+            <JavaScriptUrl
+              className='button'
+              href={`javascript:${encodeURIComponent(
+                `{${bookmarklet};main(${JSON.stringify(bookmarkletDialog)})}`
+              )}`}
+              onClick={e => e.preventDefault()}
+            >
+              Share grade distributions
+            </JavaScriptUrl>
+            <p>
+              This is best done on desktop. Adding bookmarklets on mobile can be
+              difficult.
+            </p>
           </li>
           <li>
             <p>

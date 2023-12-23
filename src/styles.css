@@ -8,6 +8,72 @@ body {
   color: #e7e8f0;
 }
 
+.modal {
+  display: block;
+  visibility: hidden;
+  border: 0;
+  padding: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  max-width: unset;
+  max-height: unset;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  transition: all 0.2s;
+  background-color: rgba(0, 0, 0, 0.5);
+  &[open] {
+    visibility: visible;
+    pointer-events: unset;
+    user-select: text;
+    opacity: 1;
+  }
+  &::backdrop {
+    background: none;
+  }
+}
+.modal-body {
+  background-color: #101433;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  border: 1px solid #303668;
+  border-bottom: 0;
+  height: 600px;
+  max-height: 80%;
+  width: 100%;
+  max-width: 800px;
+  padding: 40px;
+  box-sizing: border-box;
+  overflow: auto;
+  transform: translateY(20px);
+  transition: transform 0.2s;
+  .modal[open] & {
+    transform: none;
+  }
+}
+
+.contribute-title {
+  display: flex;
+  margin: 0;
+}
+.close-btn {
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  font-weight: normal;
+  margin-left: auto;
+  cursor: pointer;
+  line-height: 1;
+}
+
 .hero-content,
 .course {
   width: 100%;

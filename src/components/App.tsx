@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import {
   Distribution,
   Distributions,
   distributionId,
   parseDistributions
 } from '../util/distributions'
+import { Modal } from './Modal'
+import bookmarklet from '../data/bookmarklet.raw.js'
 
 const courseCodeComparator = new Intl.Collator('en-US', { numeric: true })
 
@@ -13,7 +15,10 @@ export type AppProps = {
   formUrl: string
 }
 export function App ({ sourceUrl }: AppProps) {
-  const [distributions, setDistributions] = useState<Distributions>({})
+  const [distributions, setDistributions] = useState<Distributions>({
+    '': { ', Loading...': {} }
+  })
+  const [contributeOpen, setContributeOpen] = useState(false)
 
   useEffect(() => {
     // TEMP: Currently requests once and uses cache indefinitely. In production,
@@ -44,7 +49,11 @@ export function App ({ sourceUrl }: AppProps) {
             <strong className='app-name'>SunSET</strong> for UCSD
           </h1>
           <p className='subtitle'>Furthering the legacy of CAPEs.</p>
-          <button type='button' className='contribute-btn'>
+          <button
+            type='button'
+            className='contribute-btn'
+            onClick={() => setContributeOpen(true)}
+          >
             Contribute
           </button>
           <img
@@ -83,20 +92,20 @@ export function App ({ sourceUrl }: AppProps) {
                               frequencies[id].count++
                             }
                             return (
-                              <>
+                              <Fragment key={term}>
                                 <h4 className='term-name'>{term}</h4>
-                                {Object.values(frequencies)
-                                  .sort((a, b) => b.count - a.count)
-                                  .map(({ distribution, count }) => (
-                                    <>
+                                {Object.entries(frequencies)
+                                  .sort((a, b) => b[1].count - a[1].count)
+                                  .map(([id, { distribution, count }]) => (
+                                    <Fragment key={id}>
                                       <p className='contribution-count'>
                                         Reported by {count} student
                                         {count === 1 ? '' : 's'}.
                                       </p>
                                       <pre>{JSON.stringify(distribution)}</pre>
-                                    </>
+                                    </Fragment>
                                   ))}
-                              </>
+                              </Fragment>
                             )
                           })}
                       </section>
@@ -106,6 +115,31 @@ export function App ({ sourceUrl }: AppProps) {
             </article>
           ))}
       </main>
+      <Modal open={contributeOpen} onClose={() => setContributeOpen(false)}>
+        <h1 className='contribute-title'>
+          How to contribute
+          <button type='submit' aria-label='Close' className='close-btn'>
+            &times;
+          </button>
+        </h1>
+        <ol>
+          <li>
+            <p>Drag the following link into your bookmarks bar.</p>
+          </li>
+          <li>
+            <p>
+              Go to your{' '}
+              <a href='https://act.ucsd.edu/studentAcademicHistory/academichistorystudentdisplay.htm'>
+                Academic History
+              </a>
+              .
+            </p>
+          </li>
+          <li>
+            <p>Click on the bookmark.</p>
+          </li>
+        </ol>
+      </Modal>
     </>
   )
 }

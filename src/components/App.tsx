@@ -49,7 +49,6 @@ export function App ({ sourceUrl }: AppProps) {
     window.location.hash === '#contribute'
   )
 
-  console.log('render', distributions)
   useEffect(() => {
     cacheFirstFetch(sourceUrl, r =>
       r.text().then(parseDistributions).then(setDistributions)
@@ -89,6 +88,43 @@ export function App ({ sourceUrl }: AppProps) {
         </div>
       </header>
       <main>
+        <h1 className='heading'>About</h1>
+        <div className='faq'>
+          <div className='faq-entry'>
+            <h2 className='question'>
+              Why are there multiple grade distributions for each quarter?
+            </h2>
+            <p>
+              Each entry represents a grade distribution submitted by a student.
+              Different grade distributions could be due to students being in
+              different sections, grade changes, or fake data.
+            </p>
+          </div>
+          <div className='faq-entry'>
+            <h2 className='question'>
+              How can I use the crowdsourced data in my own project?
+            </h2>
+            <p>
+              The raw crowdsourced data are available as a{' '}
+              <a
+                className='link'
+                href='https://docs.google.com/spreadsheets/d/e/2PACX-1vQ6KhjyiPM-rof6fqjBcmp7ygy4Dqr1LQ8uJiAOtR2IoihzQEumx-SHX_KKxLpmYGZksN6QsPPk0DNb/pubhtml'
+              >
+                spreadsheet
+              </a>
+              . You can find more information about available formats, the
+              project setup, and caveats on the{' '}
+              <a
+                className='link'
+                href='https://github.com/SheepTester/ucsd-sunset'
+              >
+                GitHub repository
+              </a>
+              .
+            </p>
+          </div>
+        </div>
+        <h1 className='heading'>Grades received</h1>
         {Object.entries(distributions)
           .sort((a, b) => courseCodeComparator.compare(a[0], b[0]))
           .map(([course, professors]) => (

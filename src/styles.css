@@ -196,7 +196,9 @@ a {
 }
 
 .hero-content,
-.course {
+.course,
+.faq,
+.heading {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -310,12 +312,31 @@ a {
   }
 }
 
+.faq {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.faq-entry {
+  flex: 1 0 400px;
+  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  & p,
+  & h2 {
+    margin: 0;
+  }
+}
+.question {
+  font-weight: normal;
+  line-height: normal;
+}
+
 /* TEMP */
 pre {
   margin: 0;
   white-space: pre-wrap;
   border: 1px solid currentColor;
-}
-img {
-  max-width: 100%;
 }

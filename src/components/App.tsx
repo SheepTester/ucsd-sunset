@@ -21,7 +21,9 @@ export function App ({ sourceUrl }: AppProps) {
   const [distributions, setDistributions] = useState<Distributions>({
     '': { ', Loading...': {} }
   })
-  const [contributeOpen, setContributeOpen] = useState(false)
+  const [contributeOpen, setContributeOpen] = useState(
+    window.location.hash === '#contribute'
+  )
 
   useEffect(() => {
     // TEMP: Currently requests once and uses cache indefinitely. In production,
@@ -43,6 +45,14 @@ export function App ({ sourceUrl }: AppProps) {
       .then(parseDistributions)
       .then(setDistributions)
   }, [sourceUrl])
+
+  useEffect(() => {
+    if (contributeOpen) {
+      window.history.replaceState({}, '', '#contribute')
+    } else {
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+  }, [contributeOpen])
 
   return (
     <>
@@ -121,7 +131,7 @@ export function App ({ sourceUrl }: AppProps) {
           ))}
       </main>
       <Modal open={contributeOpen} onClose={() => setContributeOpen(false)}>
-        <h1 className='contribute-title'>
+        <h1 className='contribute-title' id='contribute'>
           How to contribute
           <button type='submit' aria-label='Close' className='close-btn'>
             <CloseIcon />

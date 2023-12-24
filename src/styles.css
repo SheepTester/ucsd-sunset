@@ -84,10 +84,10 @@ a {
   border-top-right-radius: 15px;
   border: 1px solid #303668;
   border-bottom: 0;
-  height: 600px;
+  height: 700px;
   max-height: 80%;
   width: 100%;
-  max-width: 1000px;
+  max-width: 1080px;
   padding: 40px;
   box-sizing: border-box;
   overflow: auto;
@@ -205,6 +205,14 @@ a {
   box-sizing: border-box;
   padding: 20px 40px;
 }
+@media (max-width: 450px) {
+  .hero-content,
+  .course,
+  .faq,
+  .heading {
+    padding: 20px;
+  }
+}
 
 .hero {
   height: 600px;
@@ -243,7 +251,7 @@ a {
   height: 300px;
   left: 380px;
 }
-@media (max-width: 570px) {
+@media (max-width: 630px) {
   .hero {
     background-size: 100% 350px;
     height: 400px;
@@ -300,7 +308,6 @@ a {
   gap: 5px;
 }
 .contribution-count {
-  font-style: italic;
   font-size: 10px;
   text-align: right;
   margin: 0;
@@ -308,6 +315,7 @@ a {
 .grade-breakdown {
   display: flex;
   gap: 20px;
+  flex-wrap: wrap;
 }
 .grade-group {
   display: flex;
@@ -338,6 +346,7 @@ a {
 @media (max-width: 600px) {
   .course {
     flex-direction: column;
+    align-items: stretch;
   }
   .course-code {
     position: static;
@@ -347,12 +356,6 @@ a {
   }
   .term-name {
     font-size: 16px;
-  }
-}
-@media (max-width: 450px) {
-  .hero-content,
-  .course {
-    padding: 20px;
   }
 }
 
@@ -424,7 +427,7 @@ a {
   flex-wrap: wrap;
 }
 .faq-entry {
-  flex: 1 0 400px;
+  flex: 1 1 350px;
   line-height: 1.5;
   display: flex;
   flex-direction: column;

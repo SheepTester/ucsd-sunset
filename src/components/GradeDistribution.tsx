@@ -33,7 +33,7 @@ function GradeGroup ({ name, gradeTypes, distribution }: GradeGroupProps) {
       {(!name || grades.length > 1) && (
         <div className='group-breakdown'>
           {grades.map(({ grade, percentage }) => (
-            <div className='grade-count'>
+            <div className='grade-count' key={grade}>
               {grade}{' '}
               <span title={`${percentage.toFixed(2)}%`}>
                 {percentage.toFixed(0)}%

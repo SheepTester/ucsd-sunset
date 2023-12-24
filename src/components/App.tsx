@@ -73,13 +73,16 @@ export function App ({ sourceUrl }: AppProps) {
           <p className='subtitle'>
             A community effort to further the legacy of CAPEs.
           </p>
-          <button
-            type='button'
+          <a
+            href='#contribute'
             className='button contribute-btn'
-            onClick={() => setContributeOpen(true)}
+            onClick={e => {
+              e.preventDefault()
+              setContributeOpen(true)
+            }}
           >
             Contribute
-          </button>
+          </a>
           <img
             className='sun-god'
             src='./images/sunny-g-silhouette.svg'
@@ -101,8 +104,26 @@ export function App ({ sourceUrl }: AppProps) {
             </p>
           </div>
           <div className='faq-entry'>
+            <h2 className='question'>Why aren't all classes on here?</h2>
+            <p>
+              This is a crowdsourcing effort, so if no one shares data for a
+              class, the class won't be listed here. You can help by{' '}
+              <a
+                href='#contribute'
+                className='link'
+                onClick={e => {
+                  e.preventDefault()
+                  setContributeOpen(true)
+                }}
+              >
+                contributing data for your classes
+              </a>{' '}
+              and sharing this with your friends.
+            </p>
+          </div>
+          <div className='faq-entry'>
             <h2 className='question'>
-              How can I use the crowdsourced data in my own project?
+              How can I use the crowd&shy;sourced data in my own project?
             </h2>
             <p>
               The raw crowdsourced data are available as a{' '}
@@ -228,13 +249,20 @@ export function App ({ sourceUrl }: AppProps) {
           </li>
           <li>
             <div className='instruction-content'>
-              <p>Click on the bookmark.</p>
+              <p>
+                Click on the bookmark and follow the directions that appear.
+              </p>
             </div>
             <img
               className='instruction-image'
               src='./images/click-bookmark.png'
               alt='The bookmark on the bookmarks bar being clicked while on Academic History.'
             />
+          </li>
+          <li>
+            <div className='instruction-content'>
+              <p>Share this with your friends so more people can contribute!</p>
+            </div>
           </li>
         </ol>
       </Modal>

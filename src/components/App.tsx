@@ -56,7 +56,7 @@ export function App ({ sourceUrl }: AppProps) {
           </p>
           <button
             type='button'
-            className='button'
+            className='button contribute-btn'
             onClick={() => setContributeOpen(true)}
           >
             Contribute
@@ -127,39 +127,55 @@ export function App ({ sourceUrl }: AppProps) {
             <CloseIcon />
           </button>
         </h1>
-        <ol>
+        <ol className='instructions'>
           <li>
-            <p>Drag the following link into your bookmarks bar.</p>
-            <JavaScriptUrl
-              className='button'
-              href={`javascript:${encodeURIComponent(
-                `{${bookmarklet};main(${JSON.stringify(bookmarkletDialog)})}`
-              )}`}
-              onClick={e => e.preventDefault()}
-            >
-              Share grade distributions
-            </JavaScriptUrl>
-            <p>
-              This is best done on desktop. Bookmarklets on mobile are more
-              involved.
-            </p>
+            <div className='instruction-content'>
+              <p>Drag the following link into your bookmarks bar.</p>
+              <JavaScriptUrl
+                className='bookmarklet'
+                href={`javascript:${encodeURIComponent(
+                  `{${bookmarklet};main(${JSON.stringify(bookmarkletDialog)})}`
+                )}`}
+                onClick={e => e.preventDefault()}
+              >
+                Share grade distributions
+              </JavaScriptUrl>
+              <p>
+                This is best done on desktop. Doing this on mobile is harder.
+              </p>
+            </div>
             <img
+              className='instruction-image'
               src='./images/add-to-bookmarks-bar.png'
               alt='The link being dragged to the bookmarks bar.'
             />
           </li>
           <li>
-            <p>
-              Go to your{' '}
-              <a href='https://act.ucsd.edu/studentAcademicHistory/academichistorystudentdisplay.htm'>
-                Academic History
-              </a>
-              .
-            </p>
+            <div className='instruction-content'>
+              <p>
+                Go to your{' '}
+                <a
+                  className='link'
+                  href='https://act.ucsd.edu/studentAcademicHistory/academichistorystudentdisplay.htm'
+                >
+                  Academic History
+                </a>
+                .
+              </p>
+            </div>
+            <a
+              className='button'
+              href='https://act.ucsd.edu/studentAcademicHistory/academichistorystudentdisplay.htm'
+            >
+              Go to Academic History
+            </a>
           </li>
           <li>
-            <p>Click on the bookmark.</p>
+            <div className='instruction-content'>
+              <p>Click on the bookmark.</p>
+            </div>
             <img
+              className='instruction-image'
               src='./images/click-bookmark.png'
               alt='The bookmark on the bookmarks bar being clicked while on Academic History.'
             />

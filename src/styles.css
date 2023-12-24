@@ -20,11 +20,19 @@ button {
 svg {
   fill: currentColor;
 }
-
-.button {
-  margin-top: 10px;
-  color: #0b0e23;
+a {
   text-decoration: none;
+  color: inherit;
+}
+
+.link {
+  color: #f0cb2d;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+.button {
+  color: #0b0e23;
   background-color: #f0cb2d;
   padding: 10px 20px;
   border-radius: 10px;
@@ -79,7 +87,7 @@ svg {
   height: 600px;
   max-height: 80%;
   width: 100%;
-  max-width: 800px;
+  max-width: 1000px;
   padding: 40px;
   box-sizing: border-box;
   overflow: auto;
@@ -107,6 +115,80 @@ svg {
   height: 48px;
   &:hover {
     background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+.instructions {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-top: 20px;
+  counter-reset: instructions;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  & li {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+
+    &::before {
+      flex: none;
+      content: counter(instructions);
+      counter-increment: instructions;
+      font-weight: bold;
+      font-size: 24px;
+      padding: 10px 20px;
+      align-self: stretch;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 15px;
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+  }
+}
+.instruction-content {
+  flex: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+  & p {
+    margin: 0;
+  }
+}
+.instruction-image {
+  width: 400px;
+  border-radius: 15px;
+  border: 1px solid #303668;
+}
+.bookmarklet {
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: bold;
+  border: 1px solid #f0cb2d;
+  color: #f0cb2d;
+  cursor: grab;
+  transition: background-color 0.2s;
+  &:hover {
+    background-color: #f0cb2d22;
+  }
+  &:active {
+    background-color: #f0cb2d11;
+  }
+}
+@media (max-width: 820px) {
+  .instructions li {
+    flex-direction: column;
+    align-items: flex-start;
+    &::before {
+      border-radius: 50%;
+      align-self: flex-start;
+    }
+  }
+  .instruction-image {
+    width: 100%;
   }
 }
 
@@ -145,6 +227,9 @@ svg {
 }
 .subtitle {
   margin: 0;
+}
+.contribute-btn {
+  margin-top: 10px;
 }
 .sun-god {
   position: absolute;

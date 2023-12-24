@@ -61,7 +61,7 @@ export function App ({ sourceUrl }: AppProps) {
           </button>
           <img
             className='sun-god'
-            src='./sunny-g-silhouette.svg'
+            src='./images/sunny-g-silhouette.svg'
             alt='A silhouette of Sunny G. looking towards the sunset.'
           />
         </div>
@@ -142,7 +142,7 @@ export function App ({ sourceUrl }: AppProps) {
               difficult.
             </p>
             <img
-              src='./add-to-bookmarks-bar.png'
+              src='./images/add-to-bookmarks-bar.png'
               alt='The link being dragged to the bookmarks bar.'
             />
           </li>
@@ -158,7 +158,7 @@ export function App ({ sourceUrl }: AppProps) {
           <li>
             <p>Click on the bookmark.</p>
             <img
-              src='./click-bookmark.png'
+              src='./images/click-bookmark.png'
               alt='The bookmark on the bookmarks bar being clicked while on Academic History.'
             />
           </li>

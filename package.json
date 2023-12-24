@@ -4,7 +4,7 @@
   "description": "🌅 SunSET for UCSD: A crowd-sourced dataset of grade distributions submitted by students from their academic histories, to replace CAPEs' \"Grades Students Received,\" which SETs no longer publish.",
   "main": "index.js",
   "scripts": {
-    "build": "cp -a static/. dist/ && esbuild --bundle src/index.tsx --loader:.raw.js=text --loader:.html=text --outdir=dist --supported:nesting=false --minify",
+    "build": "cp -a static/. dist/ && esbuild --bundle src/index.tsx --loader:.raw.js=text --loader:.html=text --outdir=dist --supported:nesting=false --minify && find dist/ -type f | sed 's/dist\\//https:\\/\\/sheeptester.github.io\\/ucsd-sunset\\//' > dist/sitemap.txt ",
     "clean": "rm -rf dist",
     "dev": "esbuild --bundle src/index.tsx --loader:.raw.js=text --loader:.html=text --outdir=static --servedir=static --sourcemap",
     "test": "echo \"Error: no test specified\" && exit 1"

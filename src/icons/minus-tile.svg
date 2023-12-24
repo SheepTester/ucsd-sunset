@@ -5,7 +5,7 @@
   viewBox="0 -960 960 960"
   width="24"
   fill="black"
-  fill-opacity="0.2"
+  fill-opacity="0.3"
 >
   <path d="M200-440v-80h560v80H200Z" />
 </svg>

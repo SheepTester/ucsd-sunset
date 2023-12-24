@@ -153,7 +153,12 @@ export function App ({ sourceUrl }: AppProps) {
               <h2 className='course-code'>{course}</h2>
               <div className='professors'>
                 {Object.entries(professors)
-                  .sort((a, b) => a[0].localeCompare(b[0]))
+                  // Sort by instructor that taught most recently first
+                  .sort(
+                    (a, b) =>
+                      Math.max(...Object.keys(b).map(Number)) -
+                      Math.max(...Object.keys(a).map(Number))
+                  )
                   .map(([professor, terms]) => {
                     const [last, first] = professor.split(', ')
                     return (
@@ -161,9 +166,10 @@ export function App ({ sourceUrl }: AppProps) {
                         <h3 className='professor-name'>
                           {first} <strong>{last}</strong>
                         </h3>
-                        {Object.entries(terms)
-                          .sort((a, b) => a[0].localeCompare(b[0]))
-                          .map(([term, users]) => {
+                        {Object.values(terms)
+                          // Sort by most recent term first
+                          .sort((a, b) => b.term.value - a.term.value)
+                          .map(({ term, users }) => {
                             const frequencies: Record<
                               string,
                               { distribution: Distribution; count: number }
@@ -176,8 +182,10 @@ export function App ({ sourceUrl }: AppProps) {
                               frequencies[distribution.id].count++
                             }
                             return (
-                              <div className='term' key={term}>
-                                <h4 className='term-name'>{term}</h4>
+                              <div className='term' key={term.value}>
+                                <h4 className='term-name'>
+                                  {term.quarter} {term.year}
+                                </h4>
                                 {Object.entries(frequencies)
                                   .sort((a, b) => b[1].count - a[1].count)
                                   .map(([id, { distribution, count }]) => (

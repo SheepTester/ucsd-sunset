@@ -1,4 +1,5 @@
 import { gradeTypes } from './grade-types'
+import { Term, parseTerm } from './terms'
 
 export type Distribution = {
   grades: Record<string, number>
@@ -10,8 +11,11 @@ export type Distribution = {
 export type Distributions = {
   [courseCode: string]: {
     [professor: string]: {
-      [term: string]: {
-        [userId: string]: Distribution
+      [termValue: number]: {
+        term: Term
+        users: {
+          [userId: string]: Distribution
+        }
       }
     }
   }
@@ -24,7 +28,7 @@ export type Distributions = {
 export function parseDistributions (tsv: string): Distributions {
   const distributions: Distributions = {}
   for (const row of tsv.trim().split(/\r?\n/).slice(1)) {
-    const [, userId, term, course, professor, distribution] = row.split('\t')
+    const [, userId, termStr, course, professor, distribution] = row.split('\t')
     if (
       distribution.includes(
         'Grade Distribution is not available for classes with 10 students or less.'
@@ -34,7 +38,8 @@ export function parseDistributions (tsv: string): Distributions {
     }
     distributions[course] ??= {}
     distributions[course][professor] ??= {}
-    distributions[course][professor][term] ??= {}
+    const term = parseTerm(termStr)
+    distributions[course][professor][term.value] ??= { term, users: {} }
     // Assume that the spreadsheet rows are in chronological order, so later
     // rows by the same user are more recent and will overwrite previous ones
     const grades = distribution
@@ -53,7 +58,7 @@ export function parseDistributions (tsv: string): Distributions {
         }
         return true
       })
-    distributions[course][professor][term][userId] = {
+    distributions[course][professor][term.value].users[userId] = {
       grades: Object.fromEntries(grades),
       total: grades.reduce((cum, curr) => cum + curr[1], 0),
       id: grades

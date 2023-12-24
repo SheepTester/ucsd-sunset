@@ -1,0 +1,13 @@
+<!-- Modified from https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/more_horiz/default/24px.svg -->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  height="24"
+  viewBox="0 -960 960 960"
+  width="24"
+  fill="black"
+  fill-opacity="0.1"
+>
+  <path
+    d="M480-400q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Z"
+  />
+</svg>

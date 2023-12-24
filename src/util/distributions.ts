@@ -1,14 +1,10 @@
-export type Distribution = {
-  grade: string
-  count: number
-}[]
+import { gradeTypes } from './grade-types'
 
-/** Returns a unique identifier for the grade distribution. */
-export function distributionId (distribution: Distribution): string {
-  return distribution
-    .map(({ grade, count }) => `${grade}:${count}`)
-    .sort()
-    .join(', ')
+export type Distribution = {
+  grades: Record<string, number>
+  total: number
+  /** A unique identifier for the grade distribution. */
+  id: string
 }
 
 export type Distributions = {
@@ -29,17 +25,42 @@ export function parseDistributions (tsv: string): Distributions {
   const distributions: Distributions = {}
   for (const row of tsv.trim().split(/\r?\n/).slice(1)) {
     const [, userId, term, course, professor, distribution] = row.split('\t')
+    if (
+      distribution.includes(
+        'Grade Distribution is not available for classes with 10 students or less.'
+      )
+    ) {
+      continue
+    }
     distributions[course] ??= {}
     distributions[course][professor] ??= {}
     distributions[course][professor][term] ??= {}
     // Assume that the spreadsheet rows are in chronological order, so later
     // rows by the same user are more recent and will overwrite previous ones
-    distributions[course][professor][term][userId] = distribution
+    const grades = distribution
       .split(', ')
       .map(entry => {
         const [grade, count] = entry.split(':')
-        return { grade, count: +count }
+        return [grade, +count] as const
       })
+      .filter(([grade]) => {
+        if (grade === 'Total Students' || grade === 'Class GPA') {
+          return false
+        }
+        if (!gradeTypes.includes(grade)) {
+          console.warn('Unknown grade', grade)
+          return false
+        }
+        return true
+      })
+    distributions[course][professor][term][userId] = {
+      grades: Object.fromEntries(grades),
+      total: grades.reduce((cum, curr) => cum + curr[1], 0),
+      id: grades
+        .map(([grade, count]) => `${grade}:${count}`)
+        .sort()
+        .join('\n')
+    }
   }
   return distributions
 }

@@ -276,20 +276,64 @@ a {
 .term-name {
   font-weight: normal;
 }
+.professor {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 .professor-name {
   font-size: 24px;
   margin: 0;
-  margin-bottom: 20px;
+}
+.term {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 .term-name {
   font-size: 18px;
   margin: 0;
+}
+.distribution {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 .contribution-count {
   font-style: italic;
   font-size: 10px;
   text-align: right;
   margin: 0;
+}
+.grade-breakdown {
+  display: flex;
+  gap: 20px;
+}
+.grade-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.group-color-ball {
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  border-radius: 50%;
+  margin-right: 5px;
+  background-position: center;
+}
+.group-breakdown {
+  display: flex;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9em;
+}
+.visual-breakdown {
+  display: flex;
+  height: 24px;
+  border-radius: 5px;
+  overflow: hidden;
+  gap: 2px;
 }
 @media (max-width: 600px) {
   .course {
@@ -312,6 +356,65 @@ a {
   }
 }
 
+.grade-color-A\+,
+.grade-color-A,
+.grade-color-A- {
+  background-color: #06b6d4;
+}
+.grade-color-B\+,
+.grade-color-B,
+.grade-color-B- {
+  background-color: #3b82f6;
+}
+.grade-color-C\+,
+.grade-color-C,
+.grade-color-C- {
+  background-color: #8b5cf6;
+}
+.grade-color-A\+,
+.grade-color-B\+,
+.grade-color-C\+ {
+  background-image: url('./icons/plus-tile.svg');
+  background-size: 12px;
+}
+.grade-color-A,
+.grade-color-B,
+.grade-color-C {
+  background-image: url('./icons/dot-tile.svg');
+  background-size: 12px;
+}
+.grade-color-A-,
+.grade-color-B-,
+.grade-color-C- {
+  background-image: url('./icons/minus-tile.svg');
+  background-size: 12px;
+}
+.grade-color-D {
+  background-color: #ec4899;
+}
+.grade-color-F {
+  background-color: #f43f5e;
+}
+.grade-color-P,
+.grade-color-S {
+  background-color: #e2e8f0;
+  background-image: url('./icons/plus-tile-grey.svg');
+  background-size: 12px;
+}
+.grade-color-NP,
+.grade-color-U {
+  background-color: #cbd5e1;
+  background-image: url('./icons/minus-tile-grey.svg');
+  background-size: 12px;
+}
+.grade-color-I {
+  background-color: #94a3b8;
+}
+.grade-color-Other,
+.grade-color-W {
+  background-color: #64748b;
+}
+
 .faq {
   display: flex;
   gap: 20px;
@@ -319,7 +422,7 @@ a {
 }
 .faq-entry {
   flex: 1 0 400px;
-  line-height: 1.4;
+  line-height: 1.5;
   display: flex;
   flex-direction: column;
   gap: 20px;

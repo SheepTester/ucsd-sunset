@@ -1,8 +1,7 @@
-import { Fragment, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Distribution,
   Distributions,
-  distributionId,
   parseDistributions
 } from '../util/distributions'
 import { Modal } from './Modal'
@@ -10,6 +9,7 @@ import bookmarklet from '../data/bookmarklet.raw.js'
 import bookmarkletDialog from '../data/bookmarklet-dialog-injection.html'
 import { JavaScriptUrl } from './JavaScriptUrl'
 import { CloseIcon } from './CloseIcon'
+import { GradeDistribution } from './GradeDistribution'
 
 const courseCodeComparator = new Intl.Collator('en-US', { numeric: true })
 
@@ -148,25 +148,25 @@ export function App ({ sourceUrl }: AppProps) {
                               { distribution: Distribution; count: number }
                             > = {}
                             for (const distribution of Object.values(users)) {
-                              const id = distributionId(distribution)
-                              frequencies[id] ??= { distribution, count: 0 }
-                              frequencies[id].count++
+                              frequencies[distribution.id] ??= {
+                                distribution,
+                                count: 0
+                              }
+                              frequencies[distribution.id].count++
                             }
                             return (
-                              <Fragment key={term}>
+                              <div className='term' key={term}>
                                 <h4 className='term-name'>{term}</h4>
                                 {Object.entries(frequencies)
                                   .sort((a, b) => b[1].count - a[1].count)
                                   .map(([id, { distribution, count }]) => (
-                                    <Fragment key={id}>
-                                      <p className='contribution-count'>
-                                        Reported by {count} student
-                                        {count === 1 ? '' : 's'}.
-                                      </p>
-                                      <pre>{JSON.stringify(distribution)}</pre>
-                                    </Fragment>
+                                    <GradeDistribution
+                                      key={id}
+                                      contributors={count}
+                                      distribution={distribution}
+                                    />
                                   ))}
-                              </Fragment>
+                              </div>
                             )
                           })}
                       </section>

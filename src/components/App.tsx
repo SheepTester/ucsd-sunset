@@ -141,6 +141,10 @@ export function App ({ sourceUrl }: AppProps) {
               This is best done on desktop. Adding bookmarklets on mobile can be
               difficult.
             </p>
+            <img
+              src='./add-to-bookmarks-bar.png'
+              alt='The link being dragged to the bookmarks bar.'
+            />
           </li>
           <li>
             <p>
@@ -153,6 +157,10 @@ export function App ({ sourceUrl }: AppProps) {
           </li>
           <li>
             <p>Click on the bookmark.</p>
+            <img
+              src='./click-bookmark.png'
+              alt='The bookmark on the bookmarks bar being clicked while on Academic History.'
+            />
           </li>
         </ol>
       </Modal>

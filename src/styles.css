@@ -229,3 +229,6 @@ pre {
   white-space: pre-wrap;
   border: 1px solid currentColor;
 }
+img {
+  max-width: 100%;
+}

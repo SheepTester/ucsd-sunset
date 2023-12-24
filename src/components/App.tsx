@@ -13,6 +13,30 @@ import { CloseIcon } from './CloseIcon'
 
 const courseCodeComparator = new Intl.Collator('en-US', { numeric: true })
 
+/**
+ * Tries loading the response from cache, then calls `callback` when it's
+ * loaded. Then, it fetches it and stores it in cache and calls `callback`
+ * (possibly again).
+ */
+async function cacheFirstFetch (
+  request: RequestInfo | URL,
+  callback: (response: Response) => void
+): Promise<void> {
+  // idk why Cache API would fail (other than not being on HTTPS), but I don't
+  // want it to prevent the entire app from working
+  let cache: Cache | undefined
+  try {
+    cache = await caches.open('sunset-cache')
+    const response = await cache.match(request)
+    if (response) {
+      callback(response)
+    }
+  } catch {}
+  const response = await fetch(request)
+  await cache?.put(request, response.clone())
+  callback(response)
+}
+
 export type AppProps = {
   sourceUrl: string
   formUrl: string
@@ -25,25 +49,11 @@ export function App ({ sourceUrl }: AppProps) {
     window.location.hash === '#contribute'
   )
 
+  console.log('render', distributions)
   useEffect(() => {
-    // TEMP: Currently requests once and uses cache indefinitely. In production,
-    // it should always request a new version
-    caches
-      .open('sunset-cache')
-      .then(cache =>
-        cache
-          .match(sourceUrl)
-          .then(
-            response =>
-              response ??
-              fetch(sourceUrl).then(
-                response => (cache.put(sourceUrl, response.clone()), response)
-              )
-          )
-      )
-      .then(r => r.text())
-      .then(parseDistributions)
-      .then(setDistributions)
+    cacheFirstFetch(sourceUrl, r =>
+      r.text().then(parseDistributions).then(setDistributions)
+    )
   }, [sourceUrl])
 
   useEffect(() => {

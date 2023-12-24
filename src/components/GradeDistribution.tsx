@@ -17,6 +17,7 @@ function GradeGroup ({ name, gradeTypes, distribution }: GradeGroupProps) {
     return null
   }
   const groupName = grades.length === 1 ? grades[0].grade : name
+  const totalPercentage = grades.reduce((cum, curr) => cum + curr.percentage, 0)
   return (
     <div className='grade-group'>
       <div
@@ -25,13 +26,18 @@ function GradeGroup ({ name, gradeTypes, distribution }: GradeGroupProps) {
       >
         <span className={`group-color-ball grade-color-${groupName}`} />
         <strong>{groupName}</strong>{' '}
-        {grades.reduce((cum, curr) => cum + curr.percentage, 0).toFixed(0)}%
+        <span title={`${totalPercentage.toFixed(2)}%`}>
+          {totalPercentage.toFixed(0)}%
+        </span>
       </div>
       {(!name || grades.length > 1) && (
         <div className='group-breakdown'>
           {grades.map(({ grade, percentage }) => (
             <div className='grade-count'>
-              {grade} {percentage.toFixed(0)}%
+              {grade}{' '}
+              <span title={`${percentage.toFixed(2)}%`}>
+                {percentage.toFixed(0)}%
+              </span>
             </div>
           ))}
         </div>

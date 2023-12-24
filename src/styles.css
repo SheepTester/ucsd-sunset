@@ -414,6 +414,9 @@ a {
 .grade-color-W {
   background-color: #64748b;
 }
+.grade-color-Blank {
+  background-color: #334155;
+}
 
 .faq {
   display: flex;

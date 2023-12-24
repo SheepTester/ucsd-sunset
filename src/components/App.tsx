@@ -51,7 +51,9 @@ export function App ({ sourceUrl }: AppProps) {
           <h1 className='title'>
             <strong className='app-name'>SunSET</strong> for UCSD
           </h1>
-          <p className='subtitle'>Furthering the legacy of CAPEs.</p>
+          <p className='subtitle'>
+            A community effort to further the legacy of CAPEs.
+          </p>
           <button
             type='button'
             className='button'
@@ -138,8 +140,8 @@ export function App ({ sourceUrl }: AppProps) {
               Share grade distributions
             </JavaScriptUrl>
             <p>
-              This is best done on desktop. Adding bookmarklets on mobile can be
-              difficult.
+              This is best done on desktop. Bookmarklets on mobile are more
+              involved.
             </p>
             <img
               src='./images/add-to-bookmarks-bar.png'

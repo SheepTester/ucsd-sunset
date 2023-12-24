@@ -1,0 +1,18 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="100" height="100" rx="20" fill="url(#paint0_linear_2369_2433)"/>
+<rect width="100" height="100" rx="20" fill="url(#paint1_radial_2369_2433)"/>
+<line x1="15" y1="67.5" x2="85" y2="67.5" stroke="black" stroke-width="5"/>
+<line x1="35" y1="77.5" x2="65" y2="77.5" stroke="black" stroke-width="5"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M72.9198 60C74.2578 56.9377 75 53.5555 75 50C75 36.1929 63.8071 25 50 25C36.1929 25 25 36.1929 25 50C25 53.5555 25.7422 56.9377 27.0802 60H21.7071C20.6015 56.8722 20 53.5064 20 50C20 33.4315 33.4315 20 50 20C66.5685 20 80 33.4315 80 50C80 53.5064 79.3985 56.8722 78.2929 60H72.9198Z" fill="#0B0E23"/>
+<defs>
+<linearGradient id="paint0_linear_2369_2433" x1="50" y1="0" x2="50" y2="100" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6697E1"/>
+<stop offset="0.625" stop-color="#B7D4ED"/>
+<stop offset="1" stop-color="#EAB64C"/>
+</linearGradient>
+<radialGradient id="paint1_radial_2369_2433" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(50 100) rotate(90) scale(24.5 34.4323)">
+<stop stop-color="#FFD600" stop-opacity="0.9"/>
+<stop offset="1" stop-color="#FFD600" stop-opacity="0"/>
+</radialGradient>
+</defs>
+</svg>

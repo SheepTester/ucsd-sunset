@@ -1,4 +1,6 @@
-# SunSET for UCSD 🌅
+<img src="./docs/logo.svg" alt="SunSET logo" width="64" align="right" />
+
+# SunSET for UCSD
 
 A crowdsourced dataset of grade distributions submitted by students from their academic histories, to replace CAPEs' "Grades Students Received," which SETs no longer publish.
 
@@ -70,6 +72,10 @@ The Google Form has a [Google Apps Script][apps-script] connected that [adds the
 
 [form]: https://docs.google.com/forms/d/e/1FAIpQLSdRQu1lV9dlmMFYKVqQVC_p9V2oNv3qmAdG1IjsoeGmZ0V9OA/viewform
 [apps-script]: https://developers.google.com/apps-script/reference/forms
+
+### Caveats
+
+Our academic history does not include the section codes that students are enrolled in, but it only shows the grade distribution for the enrolled section. This means that there's no way to tell what section a grade distribution belongs to, and how to distinguish between changes to a section's grades (e.g. blank grades being resolved) from other sections and faked data. This problem is left as an exercise for data consumers.
 
 ## Development
 

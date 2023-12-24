@@ -123,8 +123,7 @@ svg {
   height: 600px;
   display: flex;
   justify-content: center;
-  background-image: linear-gradient(#96a7b9 50%, #f18032);
-  background-image: linear-gradient(#778391, #93a3ab 10%, #b1bcbb 60%, #f18032);
+  background-image: linear-gradient(#6697e1, #b7d4ed 70%, #eab64c);
   background-image: linear-gradient(in lab, #6697e1, #b7d4ed 70%, #eab64c);
   background-size: 100% 500px;
   background-repeat: no-repeat;
@@ -152,7 +151,7 @@ svg {
   z-index: -1;
   bottom: 100px;
   height: 300px;
-  left: 300px;
+  left: 380px;
 }
 @media (max-width: 570px) {
   .hero {

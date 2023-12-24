@@ -9,6 +9,7 @@ import { Modal } from './Modal'
 import bookmarklet from '../data/bookmarklet.raw.js'
 import bookmarkletDialog from '../data/bookmarklet-dialog-injection.html'
 import { JavaScriptUrl } from './JavaScriptUrl'
+import { CloseIcon } from './CloseIcon'
 
 const courseCodeComparator = new Intl.Collator('en-US', { numeric: true })
 
@@ -121,7 +122,7 @@ export function App ({ sourceUrl }: AppProps) {
         <h1 className='contribute-title'>
           How to contribute
           <button type='submit' aria-label='Close' className='close-btn'>
-            &times;
+            <CloseIcon />
           </button>
         </h1>
         <ol>

@@ -8,14 +8,23 @@ body {
   color: #e7e8f0;
 }
 
-.button {
-  margin-top: 10px;
+button {
   border: 0;
   background: none;
+  font: inherit;
+  color: inherit;
+  &:not(:disabled) {
+    cursor: pointer;
+  }
+}
+svg {
+  fill: currentColor;
+}
+
+.button {
+  margin-top: 10px;
   color: #0b0e23;
   text-decoration: none;
-  font: inherit;
-  cursor: pointer;
   background-color: #f0cb2d;
   padding: 10px 20px;
   border-radius: 10px;
@@ -86,14 +95,19 @@ body {
   margin: 0;
 }
 .close-btn {
-  border: 0;
-  background: none;
-  font: inherit;
-  color: inherit;
   font-weight: normal;
+  margin: -4px;
   margin-left: auto;
-  cursor: pointer;
   line-height: 1;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
 }
 
 .hero-content,

@@ -86,6 +86,7 @@ This project requires [Node][node]. If you want to use [Yarn][yarn], you can ins
 
 ```shell
 # Start a development server
+$ yarn build:bookmarklet
 $ yarn dev
 # Build into dist/
 $ yarn build

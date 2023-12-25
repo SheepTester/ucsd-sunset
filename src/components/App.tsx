@@ -1,12 +1,7 @@
 import { useEffect, useState } from 'react'
-import {
-  Distribution,
-  Distributions,
-  parseDistributions
-} from '../util/distributions'
+import { Distributions, parseDistributions } from '../util/distributions'
 import { Modal } from './Modal'
-import bookmarklet from '../data/bookmarklet.raw.js'
-import bookmarkletDialog from '../data/bookmarklet-dialog-injection.html'
+import bookmarklet from '../data/inject.raw.js'
 import { JavaScriptUrl } from './JavaScriptUrl'
 import { CloseIcon } from './CloseIcon'
 import { GradeDistribution } from './GradeDistribution'
@@ -201,9 +196,7 @@ export function App ({ sourceUrl }: AppProps) {
               <p>Drag the following link into your bookmarks bar.</p>
               <JavaScriptUrl
                 className='bookmarklet'
-                href={`javascript:${encodeURIComponent(
-                  `{${bookmarklet};main(${JSON.stringify(bookmarkletDialog)})}`
-                )}`}
+                href={`javascript:${encodeURIComponent(bookmarklet.trim())}`}
                 onClick={e => e.preventDefault()}
               >
                 Share grade distributions

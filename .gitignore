@@ -3,3 +3,4 @@ package-lock.json
 yarn.lock
 
 dist/
+src/data/inject.raw.js

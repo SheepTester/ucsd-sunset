@@ -11,8 +11,6 @@ import { JavaScriptUrl } from './JavaScriptUrl'
 import { CloseIcon } from './CloseIcon'
 import { GradeDistribution } from './GradeDistribution'
 
-const courseCodeComparator = new Intl.Collator('en-US', { numeric: true })
-
 /**
  * Tries loading the response from cache, then calls `callback` when it's
  * loaded. Then, it fetches it and stores it in cache and calls `callback`
@@ -42,23 +40,30 @@ export type AppProps = {
   formUrl: string
 }
 export function App ({ sourceUrl }: AppProps) {
-  const [distributions, setDistributions] = useState<Distributions>({
-    '': { ', Loading...': {} }
-  })
+  const [distributions, setDistributions] = useState<Distributions>([
+    { course: '', professors: [{ first: 'Loading...', last: '', terms: [] }] }
+  ])
+  const [contributorCount, setContributorCount] = useState(0)
   const [contributeOpen, setContributeOpen] = useState(
     window.location.hash === '#contribute'
   )
 
   useEffect(() => {
     cacheFirstFetch(sourceUrl, r =>
-      r.text().then(parseDistributions).then(setDistributions)
+      r
+        .text()
+        .then(parseDistributions)
+        .then(({ distributions, contributors }) => {
+          setDistributions(distributions)
+          setContributorCount(contributors)
+        })
     )
   }, [sourceUrl])
 
   useEffect(() => {
     if (contributeOpen) {
       window.history.replaceState({}, '', '#contribute')
-    } else {
+    } else if (window.location.hash === '#contribute') {
       window.history.replaceState({}, '', window.location.pathname)
     }
   }, [contributeOpen])
@@ -120,6 +125,14 @@ export function App ({ sourceUrl }: AppProps) {
               </a>{' '}
               and sharing this with your friends.
             </p>
+            <p>
+              This would not have been possible without the contributions of{' '}
+              <strong>
+                {contributorCount} student
+                {contributorCount === 1 ? '' : 's'}
+              </strong>
+              &mdash;and counting.
+            </p>
           </div>
           <div className='faq-entry'>
             <h2 className='question'>
@@ -146,64 +159,34 @@ export function App ({ sourceUrl }: AppProps) {
           </div>
         </div>
         <h1 className='heading'>Grades received</h1>
-        {Object.entries(distributions)
-          .sort((a, b) => courseCodeComparator.compare(a[0], b[0]))
-          .map(([course, professors]) => (
-            <article className='course' key={course}>
-              <h2 className='course-code'>{course}</h2>
-              <div className='professors'>
-                {Object.entries(professors)
-                  // Sort by instructor that taught most recently first
-                  .sort(
-                    (a, b) =>
-                      Math.max(...Object.keys(b).map(Number)) -
-                      Math.max(...Object.keys(a).map(Number))
-                  )
-                  .map(([professor, terms]) => {
-                    const [last, first] = professor.split(', ')
-                    return (
-                      <section className='professor' key={professor}>
-                        <h3 className='professor-name'>
-                          {first} <strong>{last}</strong>
-                        </h3>
-                        {Object.values(terms)
-                          // Sort by most recent term first
-                          .sort((a, b) => b.term.value - a.term.value)
-                          .map(({ term, users }) => {
-                            const frequencies: Record<
-                              string,
-                              { distribution: Distribution; count: number }
-                            > = {}
-                            for (const distribution of Object.values(users)) {
-                              frequencies[distribution.id] ??= {
-                                distribution,
-                                count: 0
-                              }
-                              frequencies[distribution.id].count++
-                            }
-                            return (
-                              <div className='term' key={term.value}>
-                                <h4 className='term-name'>
-                                  {term.quarter} {term.year}
-                                </h4>
-                                {Object.entries(frequencies)
-                                  .sort((a, b) => b[1].count - a[1].count)
-                                  .map(([id, { distribution, count }]) => (
-                                    <GradeDistribution
-                                      key={id}
-                                      contributors={count}
-                                      distribution={distribution}
-                                    />
-                                  ))}
-                              </div>
-                            )
-                          })}
-                      </section>
-                    )
-                  })}
-              </div>
-            </article>
-          ))}
+        {distributions.map(({ course, professors }) => (
+          <article className='course' key={course}>
+            <h2 className='course-code'>{course}</h2>
+            <div className='professors'>
+              {professors.map(({ first, last, terms }) => (
+                <section className='professor' key={`${last}, ${first}`}>
+                  <h3 className='professor-name'>
+                    {first} <strong>{last}</strong>
+                  </h3>
+                  {terms.map(({ term, distributions }) => (
+                    <div className='term' key={term.value}>
+                      <h4 className='term-name'>
+                        {term.quarter} {term.year}
+                      </h4>
+                      {distributions.map(({ distribution, count }) => (
+                        <GradeDistribution
+                          key={distribution.id}
+                          contributors={count}
+                          distribution={distribution}
+                        />
+                      ))}
+                    </div>
+                  ))}
+                </section>
+              ))}
+            </div>
+          </article>
+        ))}
       </main>
       <Modal open={contributeOpen} onClose={() => setContributeOpen(false)}>
         <h1 className='contribute-title' id='contribute'>

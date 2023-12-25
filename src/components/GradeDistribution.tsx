@@ -11,13 +11,14 @@ function GradeGroup ({ name, gradeTypes, distribution }: GradeGroupProps) {
     .filter(grade => distribution.grades[grade])
     .map(grade => ({
       grade,
-      percentage: (distribution.grades[grade] / distribution.total) * 100
+      count: distribution.grades[grade]
     }))
   if (grades.length === 0) {
     return null
   }
   const groupName = grades.length === 1 ? grades[0].grade : name
-  const totalPercentage = grades.reduce((cum, curr) => cum + curr.percentage, 0)
+  const total = grades.reduce((cum, curr) => cum + curr.count, 0)
+  const percentage = (total / distribution.total) * 100
   return (
     <div className='grade-group'>
       <div
@@ -25,21 +26,30 @@ function GradeGroup ({ name, gradeTypes, distribution }: GradeGroupProps) {
         style={{ visibility: name ? undefined : 'hidden' }}
       >
         <span className={`group-color-ball grade-color-${groupName}`} />
-        <strong>{groupName}</strong>{' '}
-        <span title={`${totalPercentage.toFixed(2)}%`}>
-          {totalPercentage.toFixed(0)}%
+        <strong>{groupName}</strong>:{' '}
+        <span
+          title={`${total}/${distribution.total} (${percentage.toFixed(2)}%)`}
+        >
+          {percentage.toFixed(0)}%
         </span>
       </div>
       {(!name || grades.length > 1) && (
         <div className='group-breakdown'>
-          {grades.map(({ grade, percentage }) => (
-            <div className='grade-count' key={grade}>
-              {grade}{' '}
-              <span title={`${percentage.toFixed(2)}%`}>
-                {percentage.toFixed(0)}%
-              </span>
-            </div>
-          ))}
+          {grades.map(({ grade, count }) => {
+            const percentage = (count / distribution.total) * 100
+            return (
+              <div className='grade-count' key={grade}>
+                {grade}:{' '}
+                <span
+                  title={`${total}/${distribution.total} (${percentage.toFixed(
+                    2
+                  )}%)`}
+                >
+                  {percentage.toFixed(0)}%
+                </span>
+              </div>
+            )
+          })}
         </div>
       )}
     </div>

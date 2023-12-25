@@ -23,14 +23,15 @@ function handleSubmit ({ response }) {
   const time = response.getTimestamp().toISOString()
   const id = md5(response.getRespondentEmail().split('@')[0])
   const content = JSON.parse(response.getResponseForItem(message).getResponse())
-  for (const { term, course, professor, grades } of content) {
+  for (const { term, course, professor, grades, recommend } of content) {
     sheet.appendRow([
       time,
       id,
       term,
       course,
       professor,
-      grades.map(([grade, count]) => `${grade}:${count}`).join(', ')
+      grades.map(([grade, count]) => `${grade}:${count}`).join(', '),
+      typeof recommend === 'boolean' ? (recommend ? 'TRUE' : 'FALSE') : ''
     ])
   }
 }

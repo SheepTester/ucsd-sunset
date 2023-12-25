@@ -8,27 +8,46 @@ export type Distribution = {
   id: string
 }
 
-export type Distributions = {
-  [courseCode: string]: {
+type RawDistributions = {
+  [course: string]: {
     [professor: string]: {
-      [termValue: number]: {
-        term: Term
-        users: {
-          [userId: string]: Distribution
-        }
+      [term: string]: {
+        [userId: string]: Distribution
       }
     }
   }
 }
+export type Distributions = {
+  course: string
+  professors: {
+    first: string
+    last: string
+    terms: {
+      term: Term
+      distributions: {
+        distribution: Distribution
+        count: number
+      }[]
+    }[]
+  }[]
+}[]
 
+const courseCodeComparator = new Intl.Collator('en-US', { numeric: true })
+
+export type ParseResult = {
+  distributions: Distributions
+  contributors: number
+}
 /**
  * Parses a TSV file into a mapping of courses, professors, terms, and
  * contributors to grade distributions.
  */
-export function parseDistributions (tsv: string): Distributions {
-  const distributions: Distributions = {}
+export function parseDistributions (tsv: string): ParseResult {
+  const distributions: RawDistributions = {}
+  const contributors = new Set<string>()
   for (const row of tsv.trim().split(/\r?\n/).slice(1)) {
-    const [, userId, termStr, course, professor, distribution] = row.split('\t')
+    const [, userId, term, course, professor, distribution] = row.split('\t')
+    contributors.add(userId)
     if (
       distribution.includes(
         'Grade Distribution is not available for classes with 10 students or less.'
@@ -38,8 +57,7 @@ export function parseDistributions (tsv: string): Distributions {
     }
     distributions[course] ??= {}
     distributions[course][professor] ??= {}
-    const term = parseTerm(termStr)
-    distributions[course][professor][term.value] ??= { term, users: {} }
+    distributions[course][professor][term] ??= {}
     // Assume that the spreadsheet rows are in chronological order, so later
     // rows by the same user are more recent and will overwrite previous ones
     const grades = distribution
@@ -58,7 +76,7 @@ export function parseDistributions (tsv: string): Distributions {
         }
         return true
       })
-    distributions[course][professor][term.value].users[userId] = {
+    distributions[course][professor][term][userId] = {
       grades: Object.fromEntries(grades),
       total: grades.reduce((cum, curr) => cum + curr[1], 0),
       id: grades
@@ -67,5 +85,48 @@ export function parseDistributions (tsv: string): Distributions {
         .join('\n')
     }
   }
-  return distributions
+  return {
+    distributions: Object.entries(distributions)
+      .map(([course, professors]) => {
+        return {
+          course,
+          professors: Object.entries(professors)
+            .map(([professor, terms]) => {
+              const [last, first] = professor.split(', ')
+              return {
+                first,
+                last,
+                terms: Object.entries(terms)
+                  .map(([term, users]) => {
+                    const frequencies: Record<
+                      string,
+                      { distribution: Distribution; count: number }
+                    > = {}
+                    for (const distribution of Object.values(users)) {
+                      frequencies[distribution.id] ??= {
+                        distribution,
+                        count: 0
+                      }
+                      frequencies[distribution.id].count++
+                    }
+                    return {
+                      term: parseTerm(term),
+                      distributions: Object.values(frequencies).sort(
+                        (a, b) => b.count - a.count
+                      )
+                    }
+                  })
+                  // Sort by most recent term first
+                  .sort((a, b) => b.term.value - a.term.value)
+              }
+            })
+            // Sort by instructor that taught most recently first
+            .sort((a, b) => b.terms[0].term.value - a.terms[0].term.value)
+        }
+      })
+      // Sort course codes alphabetically (numerically aware comparisons, so
+      // SMTH 2 comes before SMTH 10)
+      .sort((a, b) => courseCodeComparator.compare(a.course, b.course)),
+    contributors: contributors.size
+  }
 }

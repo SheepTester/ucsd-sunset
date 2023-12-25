@@ -324,17 +324,18 @@ a {
 }
 .group-color-ball {
   display: inline-block;
-  width: 0.8em;
-  height: 0.8em;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   margin-right: 5px;
   background-position: center;
 }
 .group-breakdown {
+  margin-left: 17px;
   display: flex;
   gap: 10px;
   color: rgba(255, 255, 255, 0.7);
-  font-size: 0.9em;
+  font-size: 0.8em;
 }
 .visual-breakdown {
   display: flex;
@@ -431,16 +432,17 @@ a {
   line-height: 1.5;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
 
-  & p,
-  & h2 {
+  & p {
     margin: 0;
   }
 }
 .question {
   font-weight: normal;
   line-height: normal;
+  margin: 0;
+  margin-bottom: 10px;
 }
 
 /* TEMP */

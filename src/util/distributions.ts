@@ -1,4 +1,4 @@
-import { gradeTypes } from './grade-types'
+import { gpas, gradeTypes } from './grade-types'
 import { Term, parseTerm } from './terms'
 
 export type Distribution = {
@@ -6,6 +6,7 @@ export type Distribution = {
   total: number
   /** A unique identifier for the grade distribution. */
   id: string
+  averageGpa: number
 }
 
 type RawDistributions = {
@@ -55,34 +56,57 @@ export function parseDistributions (tsv: string): ParseResult {
     ) {
       continue
     }
+    const entries = distribution.split(', ').map(entry => {
+      const [grade, count] = entry.split(':')
+      return [grade, +count] as const
+    })
+    const grades = entries.filter(([grade]) => {
+      if (grade === 'Total Students' || grade === 'Class GPA') {
+        return false
+      }
+      if (!gradeTypes.includes(grade)) {
+        console.warn('Unknown grade', grade)
+        return false
+      }
+      return true
+    })
+    const sumGpa = grades.reduce(
+      (cum, [grade, count]) => cum + (gpas[grade] ?? 0) * count,
+      0
+    )
+    const hasGpa = grades.reduce(
+      (cum, [grade, count]) => cum + (grade in gpas ? count : 0),
+      0
+    )
+    const averageGpa = sumGpa / hasGpa || 0
+    const actualAvgGpa = entries.find(([grade]) => grade === 'Class GPA')
+    // Sanity check. For some reason, Academic History seems to round to 3
+    // places then 2 places, rather than directly to 2 places, so 3.01481 rounds
+    // to 3.02 rather than 3.01. (Also, 3.135.toFixed(2) is 3.13 not 3.14.)
+    if (
+      actualAvgGpa &&
+      actualAvgGpa[1] !== Math.round(Math.round(averageGpa * 1000) / 10) / 100
+    ) {
+      console.warn(
+        'Calculated average GPA was wrong. Expected:',
+        actualAvgGpa[1],
+        'Actual:',
+        averageGpa
+      )
+    }
+    // Assumes that the spreadsheet rows are in chronological order, so later
+    // rows by the same user are more recent and will overwrite previous ones
     distributions[course] ??= {}
     distributions[course][professor] ??= {}
     distributions[course][professor][term] ??= {}
-    // Assume that the spreadsheet rows are in chronological order, so later
-    // rows by the same user are more recent and will overwrite previous ones
-    const grades = distribution
-      .split(', ')
-      .map(entry => {
-        const [grade, count] = entry.split(':')
-        return [grade, +count] as const
-      })
-      .filter(([grade]) => {
-        if (grade === 'Total Students' || grade === 'Class GPA') {
-          return false
-        }
-        if (!gradeTypes.includes(grade)) {
-          console.warn('Unknown grade', grade)
-          return false
-        }
-        return true
-      })
     distributions[course][professor][term][userId] = {
       grades: Object.fromEntries(grades),
       total: grades.reduce((cum, curr) => cum + curr[1], 0),
       id: grades
         .map(([grade, count]) => `${grade}:${count}`)
         .sort()
-        .join('\n')
+        .join('\n'),
+      averageGpa
     }
   }
   return {

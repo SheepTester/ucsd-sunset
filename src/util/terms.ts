@@ -1,11 +1,10 @@
 const quarters: Record<string, { value: number; name: string }> = {
-  // These names seem to match https://act.ucsd.edu/scheduleOfClasses/scheduleOfClassesStudent.htm (they're all exactly 10 characters or less)
   'Winter Qtr': { value: 0, name: 'Winter' },
   'Spring Qtr': { value: 0.25, name: 'Spring' },
-  'Sum Sess I': { value: 0.51, name: 'Summer Session I' },
+  'Sum Ses I': { value: 0.51, name: 'Summer Session I' },
   'Sum Ses II': { value: 0.52, name: 'Summer Session II' },
-  SpecSumSes: { value: 0.53, name: 'Special Summer Session' },
-  'Summer Qtr': { value: 0.5, name: 'Summer Med School' },
+  // SpecSumSes: { value: 0.53, name: 'Special Summer Session' },
+  // 'Summer Qtr': { value: 0.5, name: 'Summer Med School' },
   'Fall Qtr': { value: 0.75, name: 'Fall' }
 }
 

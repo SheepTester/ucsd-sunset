@@ -31,7 +31,7 @@ function handleSubmit ({ response }) {
       course,
       professor,
       grades.map(([grade, count]) => `${grade}:${count}`).join(', '),
-      typeof recommend === 'boolean' ? (recommend ? 'TRUE' : 'FALSE') : ''
+      recommend ?? ''
     ])
   }
 }

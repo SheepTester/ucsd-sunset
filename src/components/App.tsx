@@ -5,6 +5,7 @@ import bookmarklet from '../data/inject.raw.js'
 import { JavaScriptUrl } from './JavaScriptUrl'
 import { CloseIcon } from './CloseIcon'
 import { GradeDistribution } from './GradeDistribution'
+import { SOURCE_URL } from '../urls'
 
 /**
  * Tries loading the response from cache, then calls `callback` when it's
@@ -30,11 +31,7 @@ async function cacheFirstFetch (
   callback(response)
 }
 
-export type AppProps = {
-  sourceUrl: string
-  formUrl: string
-}
-export function App ({ sourceUrl }: AppProps) {
+export function App () {
   const [distributions, setDistributions] = useState<Distributions>([
     { course: '', professors: [{ first: 'Loading...', last: '', terms: [] }] }
   ])
@@ -44,7 +41,7 @@ export function App ({ sourceUrl }: AppProps) {
   )
 
   useEffect(() => {
-    cacheFirstFetch(sourceUrl, r =>
+    cacheFirstFetch(SOURCE_URL, r =>
       r
         .text()
         .then(parseDistributions)
@@ -53,7 +50,7 @@ export function App ({ sourceUrl }: AppProps) {
           setContributorCount(contributors)
         })
     )
-  }, [sourceUrl])
+  }, [])
 
   useEffect(() => {
     if (contributeOpen) {

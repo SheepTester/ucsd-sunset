@@ -1,5 +1,5 @@
-const FORM_URL =
-  'https://docs.google.com/forms/d/e/1FAIpQLSdRQu1lV9dlmMFYKVqQVC_p9V2oNv3qmAdG1IjsoeGmZ0V9OA/viewform'
+import { FORM_URL } from '../src/urls'
+
 const ACADEMIC_HISTORY_PATH =
   '/studentAcademicHistory/academichistorystudentdisplay.htm'
 
@@ -94,6 +94,14 @@ const dialog = h('dialog', {}, [
       },
       ['×']
     ),
+    // The recommendation system needs more rethinking:
+    // - Whether you recommend a professor is more sensitive than the classes
+    //   you've taken, considering these ratings can be traced back to you
+    // - I'd like to prevent re-submitting courses that haven't changed, but
+    //   there's no way to access the student's email from Academic History (so
+    //   it can be hashed to get the user ID)
+    // - RMP already exists
+    /*
     h('details', { className: 'accordion-group' }, [
       h('summary', { className: 'accordion-heading' }, [
         h(
@@ -108,59 +116,65 @@ const dialog = h('dialog', {}, [
           className: 'accordion-inner',
           oninput: () => (textarea.value = JSON.stringify(classes))
         },
-        classes.flatMap((obj, i) => [
-          h('strong', {}, [obj.course]),
-          ' with ',
-          h('strong', {}, [obj.professor]),
-          ' (',
-          obj.term,
-          ')',
+        [
           h('p', {}, [
-            h('label', { className: 'radio inline' }, [
-              h('input', {
-                type: 'radio',
-                name: `recommend-${i}`,
-                value: 'good',
-                oninput: () => (obj.recommend = 'good')
-              }),
-              ' 🤩 would recommend to others'
-            ]),
-            ' ',
-            h('label', { className: 'radio inline' }, [
-              h('input', {
-                type: 'radio',
-                name: `recommend-${i}`,
-                value: 'ok',
-                oninput: () => (obj.recommend = 'ok')
-              }),
-              ' 🤷 it was fine'
-            ]),
-            ' ',
-            h('label', { className: 'radio inline' }, [
-              h('input', {
-                type: 'radio',
-                name: `recommend-${i}`,
-                value: 'bad',
-                oninput: () => (obj.recommend = 'bad')
-              }),
-              ' 😡 avoid if possible'
-            ]),
-            ' ',
-            h('label', { className: 'radio inline' }, [
-              h('input', {
-                type: 'radio',
-                name: `recommend-${i}`,
-                value: '',
-                oninput: () => (obj.recommend = null),
-                checked: true
-              }),
-              ' no selection'
+            "If you've filled out this form before, you do not need to do all the questions again."
+          ]),
+          ...classes.flatMap((obj, i) => [
+            h('strong', {}, [obj.course]),
+            ' with ',
+            h('strong', {}, [obj.professor]),
+            ' (',
+            obj.term,
+            ')',
+            h('p', {}, [
+              h('label', { className: 'radio inline' }, [
+                h('input', {
+                  type: 'radio',
+                  name: `recommend-${i}`,
+                  value: 'good',
+                  oninput: () => (obj.recommend = 'good')
+                }),
+                ' 🤩 would recommend to others'
+              ]),
+              ' ',
+              h('label', { className: 'radio inline' }, [
+                h('input', {
+                  type: 'radio',
+                  name: `recommend-${i}`,
+                  value: 'ok',
+                  oninput: () => (obj.recommend = 'ok')
+                }),
+                ' 🤷 it was fine'
+              ]),
+              ' ',
+              h('label', { className: 'radio inline' }, [
+                h('input', {
+                  type: 'radio',
+                  name: `recommend-${i}`,
+                  value: 'bad',
+                  oninput: () => (obj.recommend = 'bad')
+                }),
+                ' 😡 avoid if possible'
+              ]),
+              ' ',
+              h('label', { className: 'radio inline' }, [
+                h('input', {
+                  type: 'radio',
+                  name: `recommend-${i}`,
+                  value: '',
+                  oninput: () => (obj.recommend = null),
+                  checked: true
+                }),
+                ' no selection'
+              ])
             ])
           ])
-        ])
+        ]
       )
     ]),
-    h('p', {}, [
+    */
+    h('p', { style: { marginTop: '1em' } }, [
       'Copy and paste the following block of text into ',
       h('a', { href: FORM_URL }, ['this Google Form']),
       " to share your classes' grade distributions."

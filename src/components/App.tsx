@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
+import bookmarklet from '../data/inject.raw.js'
+import { SOURCE_URL } from '../urls'
 import {
   Distributions,
   courseCodeComparator,
   parseDistributions
 } from '../util/distributions'
-import { Modal } from './Modal'
-import bookmarklet from '../data/inject.raw.js'
-import { JavaScriptUrl } from './JavaScriptUrl'
 import { CloseIcon } from './CloseIcon'
-import { GradeDistribution } from './GradeDistribution'
-import { SOURCE_URL } from '../urls'
+import { Course } from './Course'
+import { JavaScriptUrl } from './JavaScriptUrl'
+import { Modal } from './Modal'
 
 /**
  * Tries loading the response from cache, then calls `callback` when it's
@@ -214,34 +214,7 @@ export function App () {
             }
             return null
           }
-          return (
-            <article className='course' key={course}>
-              <h2 className='course-code'>{course}</h2>
-              <div className='professors'>
-                {professors.map(({ first, last, terms }) => (
-                  <section className='professor' key={`${last}, ${first}`}>
-                    <h3 className='professor-name'>
-                      {first} <strong>{last}</strong>
-                    </h3>
-                    {terms.map(({ term, distributions }) => (
-                      <div className='term' key={term.value}>
-                        <h4 className='term-name'>
-                          {term.quarter} {term.year}
-                        </h4>
-                        {distributions.map(({ distribution, count }) => (
-                          <GradeDistribution
-                            key={distribution.id}
-                            contributors={count}
-                            distribution={distribution}
-                          />
-                        ))}
-                      </div>
-                    ))}
-                  </section>
-                ))}
-              </div>
-            </article>
-          )
+          return <Course course={course} professors={professors} key={course} />
         })}
       </main>
       <Modal open={contributeOpen} onClose={() => setContributeOpen(false)}>

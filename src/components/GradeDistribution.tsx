@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { Distribution } from '../util/distributions'
 import { gradeGroups, gradeTypes } from '../util/grade-types'
 
@@ -60,11 +61,8 @@ export type GradeDistributionProps = {
   contributors: number
   distribution: Distribution
 }
-export function GradeDistribution ({
-  contributors,
-  distribution
-}: GradeDistributionProps) {
-  return (
+export const GradeDistribution = memo(
+  ({ contributors, distribution }: GradeDistributionProps) => (
     <div className='distribution'>
       <div className='grade-breakdown'>
         {gradeGroups.map(({ name, grades }) => (
@@ -101,4 +99,4 @@ export function GradeDistribution ({
       </p>
     </div>
   )
-}
+)

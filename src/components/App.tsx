@@ -1,5 +1,9 @@
-import { useEffect, useState } from 'react'
-import { Distributions, parseDistributions } from '../util/distributions'
+import { useEffect, useMemo, useState } from 'react'
+import {
+  Distributions,
+  courseCodeComparator,
+  parseDistributions
+} from '../util/distributions'
 import { Modal } from './Modal'
 import bookmarklet from '../data/inject.raw.js'
 import { JavaScriptUrl } from './JavaScriptUrl'
@@ -31,6 +35,11 @@ async function cacheFirstFetch (
   callback(response)
 }
 
+type Filter = { subject: string } & (
+  | { type: 'match'; number: string }
+  | { type: 'range'; lower: string; upper: string }
+)
+
 export function App () {
   const [distributions, setDistributions] = useState<Distributions>([
     { course: '', professors: [{ first: 'Loading...', last: '', terms: [] }] }
@@ -39,6 +48,7 @@ export function App () {
   const [contributeOpen, setContributeOpen] = useState(
     window.location.hash === '#contribute'
   )
+  const [filter, setFilter] = useState('')
 
   useEffect(() => {
     cacheFirstFetch(SOURCE_URL, r =>
@@ -59,6 +69,32 @@ export function App () {
       window.history.replaceState({}, '', window.location.pathname)
     }
   }, [contributeOpen])
+
+  const filters = useMemo(
+    () =>
+      Array.from(
+        filter
+          .toUpperCase()
+          .matchAll(
+            /([A-Z]+)\s*(\d+[A-Z]*(?:\s+TO\s+\d+)?(?:\s*(?:,|\bOR\b)\s*\d+[A-Z]*)*)/g
+          ),
+        ([, subject, numbers]) =>
+          numbers.split(/,|\bOR\b/).map((part): Filter => {
+            const [lower, upper] = part.split(/\bTO\b/)
+            if (upper) {
+              return {
+                type: 'range',
+                subject,
+                lower: lower.trim(),
+                upper: upper.trim()
+              }
+            } else {
+              return { type: 'match', subject, number: part.trim() }
+            }
+          })
+      ).flat(),
+    [filter]
+  )
 
   return (
     <>
@@ -151,34 +187,62 @@ export function App () {
           </div>
         </div>
         <h1 className='heading'>Grades received</h1>
-        {distributions.map(({ course, professors }) => (
-          <article className='course' key={course}>
-            <h2 className='course-code'>{course}</h2>
-            <div className='professors'>
-              {professors.map(({ first, last, terms }) => (
-                <section className='professor' key={`${last}, ${first}`}>
-                  <h3 className='professor-name'>
-                    {first} <strong>{last}</strong>
-                  </h3>
-                  {terms.map(({ term, distributions }) => (
-                    <div className='term' key={term.value}>
-                      <h4 className='term-name'>
-                        {term.quarter} {term.year}
-                      </h4>
-                      {distributions.map(({ distribution, count }) => (
-                        <GradeDistribution
-                          key={distribution.id}
-                          contributors={count}
-                          distribution={distribution}
-                        />
-                      ))}
-                    </div>
-                  ))}
-                </section>
-              ))}
-            </div>
-          </article>
-        ))}
+        <div className='filters'>
+          <input
+            type='search'
+            value={filter}
+            onChange={e => setFilter(e.currentTarget.value)}
+          />
+        </div>
+        {distributions.map(({ course, professors }) => {
+          pass: if (filters.length > 0) {
+            const [subject, number] = course.split(' ')
+            for (const filter of filters) {
+              if (filter.subject !== subject) {
+                continue
+              }
+              if (filter.type === 'match') {
+                if (filter.number === number) {
+                  break pass
+                }
+              } else if (
+                courseCodeComparator.compare(filter.lower, number) <= 0 &&
+                courseCodeComparator.compare(number, filter.upper) <= 0
+              ) {
+                break pass
+              }
+            }
+            return null
+          }
+          return (
+            <article className='course' key={course}>
+              <h2 className='course-code'>{course}</h2>
+              <div className='professors'>
+                {professors.map(({ first, last, terms }) => (
+                  <section className='professor' key={`${last}, ${first}`}>
+                    <h3 className='professor-name'>
+                      {first} <strong>{last}</strong>
+                    </h3>
+                    {terms.map(({ term, distributions }) => (
+                      <div className='term' key={term.value}>
+                        <h4 className='term-name'>
+                          {term.quarter} {term.year}
+                        </h4>
+                        {distributions.map(({ distribution, count }) => (
+                          <GradeDistribution
+                            key={distribution.id}
+                            contributors={count}
+                            distribution={distribution}
+                          />
+                        ))}
+                      </div>
+                    ))}
+                  </section>
+                ))}
+              </div>
+            </article>
+          )
+        })}
       </main>
       <Modal open={contributeOpen} onClose={() => setContributeOpen(false)}>
         <h1 className='contribute-title' id='contribute'>

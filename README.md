@@ -47,6 +47,8 @@ And non-goals:
 - Keep contributors anonymous. We wouldn't lose too much from omitting hashed student emails from the dataset, but it might help with processing data (e.g. filtering out malicious contributors or removing duplicate submissions), and I don't think the list of courses taken by a student is too sensitive.
 - Asking if students recommend a professor or class, at least for now. [r/UCSD][reddit] and [RMP][rmp] are probably good enough, but it wouldn't be too much work to ask contributors for their recommendations.
 
+  I would like to add this to the project because it would help with sorting classes by recommended professor. However, a major issue is that contributions aren't particularly anonymous, and professor recommendations are more sensitive than the list of courses taken.
+
 [rmp]: https://www.ratemyprofessors.com/
 [reddit]: https://www.google.com/search?q=site%3Areddit.com%2Fr%2Fucsd
 
@@ -76,6 +78,8 @@ The Google Form has a [Google Apps Script][apps-script] connected that [adds the
 ### Caveats
 
 Our academic history does not include the section codes that students are enrolled in, but it only shows the grade distribution for the enrolled section. This means that there's no way to tell what section a grade distribution belongs to, and how to distinguish between changes to a section's grades (e.g. blank grades being resolved) from other sections and faked data. This problem is left as an exercise for data consumers.
+
+The SunSET website currently naïvely considers each unique grade distribution as its own section, so it's listed separately. Duplicate grade distributions are combined. If there's a grade change, it's listed as a separate grade distribution. Most grade changes are due to blank grades being resolved, so it could be possible to figure out if one grade distribution became another, but this website doesn't do that yet.
 
 ## Development
 

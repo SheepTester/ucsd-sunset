@@ -33,7 +33,9 @@ export type Distributions = {
   }[]
 }[]
 
-const courseCodeComparator = new Intl.Collator('en-US', { numeric: true })
+export const courseCodeComparator = new Intl.Collator('en-US', {
+  numeric: true
+})
 
 export type ParseResult = {
   distributions: Distributions

@@ -42,13 +42,17 @@ type Filter = { subject: string } & (
 
 export function App () {
   const [distributions, setDistributions] = useState<Distributions>([
-    { course: '', professors: [{ first: 'Loading...', last: '', terms: [] }] }
+    {
+      course: '',
+      professors: [{ first: 'Loading...', last: '', averageGpa: 0, terms: [] }]
+    }
   ])
   const [contributorCount, setContributorCount] = useState(0)
   const [contributeOpen, setContributeOpen] = useState(
     window.location.hash === '#contribute'
   )
   const [filter, setFilter] = useState('')
+  const [sort, setSort] = useState<'alpha' | 'gpa'>('alpha')
 
   useEffect(() => {
     cacheFirstFetch(SOURCE_URL, r =>
@@ -95,6 +99,18 @@ export function App () {
       ).flat(),
     [filter]
   )
+
+  const sorted = useMemo(() => {
+    if (sort === 'gpa') {
+      return distributions
+        .flatMap(({ course, professors }) =>
+          professors.map(prof => ({ course, professors: [prof] }))
+        )
+        .sort((a, b) => b.professors[0].averageGpa - a.professors[0].averageGpa)
+    } else {
+      return distributions
+    }
+  }, [distributions, sort])
 
   return (
     <>
@@ -188,7 +204,7 @@ export function App () {
         </div>
         <h1 className='heading'>Grades received</h1>
         <div className='filters'>
-          <label className='filter-courses'>
+          <label className='filter-wrapper filter-courses'>
             <p className='label'>Filter courses</p>
             <input
               type='search'
@@ -198,15 +214,23 @@ export function App () {
               onChange={e => setFilter(e.currentTarget.value)}
             />
           </label>
-          <label>
+          <label className='filter-wrapper'>
             <p className='label'>Sort by</p>
-            <select className='filter'>
-              <option>Alphabetical</option>
-              {/* <option>Average GPA</option> */}
+            <select
+              className='filter'
+              defaultValue={sort}
+              onChange={e =>
+                (e.currentTarget.value === 'alpha' ||
+                  e.currentTarget.value === 'gpa') &&
+                setSort(e.currentTarget.value)
+              }
+            >
+              <option value='alpha'>Alphabetical</option>
+              <option value='gpa'>Average GPA</option>
             </select>
           </label>
         </div>
-        {distributions.map(({ course, professors }) => {
+        {sorted.map(({ course, professors }) => {
           pass: if (filters.length > 0) {
             const [subject, number] = course.split(' ')
             for (const filter of filters) {
@@ -226,7 +250,13 @@ export function App () {
             }
             return null
           }
-          return <Course course={course} professors={professors} key={course} />
+          return (
+            <Course
+              course={course}
+              professors={professors}
+              key={`${course}\n${professors[0].last},${professors[0].first}`}
+            />
+          )
         })}
       </main>
       <Modal open={contributeOpen} onClose={() => setContributeOpen(false)}>

@@ -23,6 +23,7 @@ export type Distributions = {
   professors: {
     first: string
     last: string
+    averageGpa: number
     terms: {
       term: Term
       distributions: {
@@ -117,33 +118,53 @@ export function parseDistributions (tsv: string): ParseResult {
         return {
           course,
           professors: Object.entries(professors)
-            .map(([professor, terms]) => {
+            .map(([professor, termsObj]) => {
               const [last, first] = professor.split(', ')
+              const terms = Object.entries(termsObj)
+                .map(([term, users]) => {
+                  const frequencies: Record<
+                    string,
+                    { distribution: Distribution; count: number }
+                  > = {}
+                  for (const distribution of Object.values(users)) {
+                    frequencies[distribution.id] ??= {
+                      distribution,
+                      count: 0
+                    }
+                    frequencies[distribution.id].count++
+                  }
+                  return {
+                    term: parseTerm(term),
+                    distributions: Object.values(frequencies).sort(
+                      (a, b) => b.count - a.count
+                    )
+                  }
+                })
+                // Sort by most recent term first
+                .sort((a, b) => b.term.value - a.term.value)
+              // Average GPA by contributor
+              const sumGpa = terms.reduce(
+                (cum, curr) =>
+                  curr.distributions.reduce(
+                    (cum, curr) =>
+                      cum + curr.count * curr.distribution.averageGpa,
+                    cum
+                  ),
+                0
+              )
+              const countGpa = terms.reduce(
+                (cum, curr) =>
+                  curr.distributions.reduce(
+                    (cum, curr) => cum + curr.count,
+                    cum
+                  ),
+                0
+              )
               return {
                 first,
                 last,
-                terms: Object.entries(terms)
-                  .map(([term, users]) => {
-                    const frequencies: Record<
-                      string,
-                      { distribution: Distribution; count: number }
-                    > = {}
-                    for (const distribution of Object.values(users)) {
-                      frequencies[distribution.id] ??= {
-                        distribution,
-                        count: 0
-                      }
-                      frequencies[distribution.id].count++
-                    }
-                    return {
-                      term: parseTerm(term),
-                      distributions: Object.values(frequencies).sort(
-                        (a, b) => b.count - a.count
-                      )
-                    }
-                  })
-                  // Sort by most recent term first
-                  .sort((a, b) => b.term.value - a.term.value)
+                averageGpa: sumGpa / countGpa || 0,
+                terms
               }
             })
             // Sort by instructor that taught most recently first

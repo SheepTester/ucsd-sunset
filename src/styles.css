@@ -459,11 +459,11 @@ a {
 .filters {
   display: flex;
   gap: 20px;
-  & label {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+}
+.filter-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 .label {
   margin: 0;
@@ -473,6 +473,7 @@ a {
   padding: 0 20px;
   border-radius: 10px;
   background-color: #121634;
+  border: 1px solid #333965;
 }
 .filter-courses {
   flex: auto;

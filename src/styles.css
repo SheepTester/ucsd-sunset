@@ -8,14 +8,23 @@ body {
   color: #e7e8f0;
 }
 
-button {
+button,
+input,
+select {
   border: 0;
   background: none;
   font: inherit;
   color: inherit;
+}
+button,
+select {
   &:not(:disabled) {
     cursor: pointer;
   }
+}
+input::placeholder {
+  color: inherit;
+  opacity: 0.3;
 }
 svg {
   fill: currentColor;
@@ -198,7 +207,8 @@ a {
 .hero-content,
 .course,
 .faq,
-.heading {
+.heading,
+.filters {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -209,7 +219,8 @@ a {
   .hero-content,
   .course,
   .faq,
-  .heading {
+  .heading,
+  .filters {
     padding: 20px;
   }
 }
@@ -443,6 +454,28 @@ a {
   line-height: normal;
   margin: 0;
   margin-bottom: 10px;
+}
+
+.filters {
+  display: flex;
+  gap: 20px;
+  & label {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+.label {
+  margin: 0;
+}
+.filter {
+  height: 48px;
+  padding: 0 20px;
+  border-radius: 10px;
+  background-color: #121634;
+}
+.filter-courses {
+  flex: auto;
 }
 
 /* TEMP */

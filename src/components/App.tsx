@@ -76,7 +76,7 @@ export function App () {
         filter
           .toUpperCase()
           .matchAll(
-            /([A-Z]+)\s*(\d+[A-Z]*(?:\s+TO\s+\d+)?(?:\s*(?:,|\bOR\b)\s*\d+[A-Z]*)*)/g
+            /([A-Z]+)\s*(\d+[A-Z]*(?:\s+TO\s+\d+[A-Z]*)?(?:\s*(?:,|\bOR\b)\s*\d+[A-Z]*(?:\s+TO\s+\d+[A-Z]*)?)*)/g
           ),
         ([, subject, numbers]) =>
           numbers.split(/,|\bOR\b/).map((part): Filter => {
@@ -188,11 +188,23 @@ export function App () {
         </div>
         <h1 className='heading'>Grades received</h1>
         <div className='filters'>
-          <input
-            type='search'
-            value={filter}
-            onChange={e => setFilter(e.currentTarget.value)}
-          />
+          <label className='filter-courses'>
+            <p className='label'>Filter courses</p>
+            <input
+              type='search'
+              className='filter'
+              placeholder='Example: CSE 30, 100 to 190, ECE 101, 111'
+              value={filter}
+              onChange={e => setFilter(e.currentTarget.value)}
+            />
+          </label>
+          <label>
+            <p className='label'>Sort by</p>
+            <select className='filter'>
+              <option>Alphabetical</option>
+              {/* <option>Average GPA</option> */}
+            </select>
+          </label>
         </div>
         {distributions.map(({ course, professors }) => {
           pass: if (filters.length > 0) {

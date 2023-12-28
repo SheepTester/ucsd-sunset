@@ -31,8 +31,12 @@ async function cacheFirstFetch (
     }
   } catch {}
   const response = await fetch(request)
-  await cache?.put(request, response.clone())
-  callback(response)
+  if (response.ok) {
+    await cache?.put(request, response.clone())
+    callback(response)
+  } else {
+    throw new Error(`HTTP ${response.status} error, requesting ${request}`)
+  }
 }
 
 type Filter = { subject: string } & (

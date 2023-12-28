@@ -94,7 +94,9 @@ export const GradeDistribution = memo(
         })}
       </div>
       <p className='contribution-count'>
-        Reported by {contributors} student
+        {distribution.total} student
+        {distribution.total === 1 ? '' : 's'} enrolled. Average GPA:{' '}
+        {distribution.averageGpa.toFixed(2)}. Reported by {contributors} student
         {contributors === 1 ? '' : 's'}.
       </p>
     </div>

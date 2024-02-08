@@ -39,10 +39,9 @@ async function cacheFirstFetch (
   }
 }
 
-type Filter = { subject: string } & (
-  | { type: 'match'; number: string }
-  | { type: 'range'; lower: string; upper: string }
-)
+type Filter =
+  | { type: 'match'; subject?: string; number?: string }
+  | { type: 'range'; subject: string; lower: string; upper: string }
 
 export function App () {
   const [distributions, setDistributions] = useState<Distributions>([
@@ -84,37 +83,42 @@ export function App () {
         filter
           .toUpperCase()
           .matchAll(
-            /([A-Z]+)\s*(\d+[A-Z]*(?:\s+TO\s+\d+[A-Z]*)?(?:\s*(?:,|\bOR\b)\s*\d+[A-Z]*(?:\s+TO\s+\d+[A-Z]*)?)*)/g
+            /([A-Z]+)\s*(\d+[A-Z]*(?:\s+TO\s+\d+[A-Z]*)?(?:\s*(?:,|\bOR\b)\s*\d+[A-Z]*(?:\s+TO\s+\d+[A-Z]*)?)*)|([A-Z]+)|(\d+[A-Z]*)/g
           ),
-        ([, subject, numbers]) =>
-          numbers.split(/,|\bOR\b/).map((part): Filter => {
-            const [lower, upper] = part.split(/\bTO\b/)
-            if (upper) {
-              return {
-                type: 'range',
-                subject,
-                lower: lower.trim(),
-                upper: upper.trim()
-              }
-            } else {
-              return { type: 'match', subject, number: part.trim() }
-            }
-          })
+        ([, subject, numbers, matchSubject, matchNumber]): Filter[] =>
+          numbers
+            ? numbers.split(/,|\bOR\b/).map((part): Filter => {
+                const [lower, upper] = part.split(/\bTO\b/)
+                if (upper) {
+                  return {
+                    type: 'range',
+                    subject,
+                    lower: lower.trim(),
+                    upper: upper.trim()
+                  }
+                } else {
+                  return { type: 'match', subject, number: part.trim() }
+                }
+              })
+            : [{ type: 'match', subject: matchSubject, number: matchNumber }]
       ).flat(),
     [filter]
   )
 
-  const sorted = useMemo(() => {
-    if (sort === 'gpa') {
-      return distributions
-        .flatMap(({ course, professors }) =>
-          professors.map(prof => ({ course, professors: [prof] }))
-        )
-        .sort((a, b) => b.professors[0].averageGpa - a.professors[0].averageGpa)
-    } else {
-      return distributions
-    }
-  }, [distributions, sort])
+  const sorted = useMemo(
+    () =>
+      sort === 'gpa'
+        ? distributions
+            .flatMap(({ course, professors }) =>
+              professors.map(prof => ({ course, professors: [prof] }))
+            )
+            .sort(
+              (a, b) => b.professors[0].averageGpa - a.professors[0].averageGpa
+            )
+        : distributions,
+
+    [distributions, sort]
+  )
 
   return (
     <>
@@ -235,14 +239,15 @@ export function App () {
           </label>
         </div>
         {sorted.map(({ course, professors }) => {
+          let visible = true
           pass: if (filters.length > 0) {
             const [subject, number] = course.split(' ')
             for (const filter of filters) {
-              if (filter.subject !== subject) {
+              if (filter.subject !== undefined && filter.subject !== subject) {
                 continue
               }
               if (filter.type === 'match') {
-                if (filter.number === number) {
+                if (filter.number === undefined || filter.number === number) {
                   break pass
                 }
               } else if (
@@ -252,12 +257,13 @@ export function App () {
                 break pass
               }
             }
-            return null
+            visible = false
           }
           return (
             <Course
               course={course}
               professors={professors}
+              visible={visible}
               key={`${course}\n${professors[0].last},${professors[0].first}`}
             />
           )

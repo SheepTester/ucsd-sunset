@@ -10,6 +10,7 @@ import { CloseIcon } from './CloseIcon'
 import { Course } from './Course'
 import { JavaScriptUrl } from './JavaScriptUrl'
 import { Modal } from './Modal'
+import { CourseNumber, splitNumber } from '../util/course-codes.js'
 
 /**
  * Tries loading the response from cache, then calls `callback` when it's
@@ -40,7 +41,7 @@ async function cacheFirstFetch (
 }
 
 type Filter =
-  | { type: 'match'; subject?: string; number?: string }
+  | { type: 'match'; subject?: string; number?: CourseNumber }
   | { type: 'range'; subject: string; lower: string; upper: string }
 
 export function App () {
@@ -97,10 +98,23 @@ export function App () {
                     upper: upper.trim()
                   }
                 } else {
-                  return { type: 'match', subject, number: part.trim() }
+                  return {
+                    type: 'match',
+                    subject,
+                    number: splitNumber(part.trim())
+                  }
                 }
               })
-            : [{ type: 'match', subject: matchSubject, number: matchNumber }]
+            : [
+                {
+                  type: 'match',
+                  subject: matchSubject,
+                  number:
+                    matchNumber !== undefined
+                      ? splitNumber(matchNumber)
+                      : undefined
+                }
+              ]
       ).flat(),
     [filter]
   )
@@ -247,7 +261,13 @@ export function App () {
                 continue
               }
               if (filter.type === 'match') {
-                if (filter.number === undefined || filter.number === number) {
+                const split = splitNumber(number)
+                if (
+                  filter.number === undefined ||
+                  (filter.number.number === split.number &&
+                    (filter.number.suffix === undefined ||
+                      filter.number.suffix === split.suffix))
+                ) {
                   break pass
                 }
               } else if (

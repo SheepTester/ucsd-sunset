@@ -81,7 +81,7 @@ export function App () {
     }
   }, [contributeOpen])
 
-  const testFilter = useMemo(() => {
+  const { testFilter, filterDesc } = useMemo(() => {
     const filters = Array.from(
       filter
         .toUpperCase()
@@ -120,33 +120,51 @@ export function App () {
     ).flat()
 
     if (filters.length > 0) {
-      return (course: string) => {
-        const [subject, number] = course.split(' ')
-        for (const filter of filters) {
-          if (filter.subject !== undefined && filter.subject !== subject) {
-            continue
-          }
-          if (filter.type === 'match') {
-            const split = splitNumber(number)
-            if (
-              filter.number === undefined ||
-              (filter.number.number === split.number &&
-                (filter.number.suffix === undefined ||
-                  filter.number.suffix === split.suffix))
+      return {
+        testFilter: (course: string) => {
+          const [subject, number] = course.split(' ')
+          for (const filter of filters) {
+            if (filter.subject !== undefined && filter.subject !== subject) {
+              continue
+            }
+            if (filter.type === 'match') {
+              const split = splitNumber(number)
+              if (
+                filter.number === undefined ||
+                (filter.number.number === split.number &&
+                  (filter.number.suffix === undefined ||
+                    filter.number.suffix === split.suffix))
+              ) {
+                return true
+              }
+            } else if (
+              courseCodeComparator.compare(filter.lower, number) <= 0 &&
+              courseCodeComparator.compare(number, filter.upper) <= 0
             ) {
               return true
             }
-          } else if (
-            courseCodeComparator.compare(filter.lower, number) <= 0 &&
-            courseCodeComparator.compare(number, filter.upper) <= 0
-          ) {
-            return true
           }
-        }
-        return false
+          return false
+        },
+        filterDesc: filters
+          .map(filter =>
+            filter.type === 'range'
+              ? `${filter.subject} ${filter.lower} to ${filter.upper}`
+              : filter.subject !== undefined
+              ? `${filter.subject} ${filter.number?.number ?? 'courses'}${
+                  filter.number?.suffix ?? ''
+                }`
+              : `courses numbered ${filter.number?.number ?? ''}${
+                  filter.number?.suffix ?? ''
+                }`
+          )
+          .join(' or ')
       }
     } else {
-      return () => true
+      return {
+        testFilter: () => true,
+        filterDesc: ''
+      }
     }
   }, [filter])
 
@@ -198,6 +216,23 @@ export function App () {
       </header>
       <main>
         <h1 className='heading'>About</h1>
+        <p className='about'>
+          When UCSD replaced{' '}
+          <a href='https://cape.ucsd.edu/' className='link'>
+            CAPEs
+          </a>{' '}
+          with{' '}
+          <a
+            href='https://academicaffairs.ucsd.edu/Modules/Evals/SET/Reports/Search.aspx'
+            className='link'
+          >
+            SETs
+          </a>{' '}
+          for professor evaluations, they stopped publishing the distribution of
+          grades students received. SunSET is a student-run project to
+          crowdsource data from previous students to keep this resource
+          available for future generations.
+        </p>
         <div className='faq'>
           <div className='faq-entry'>
             <h2 className='question'>
@@ -305,6 +340,9 @@ export function App () {
               />
             )
           })}
+        {filtered.length === 0 && (
+          <p className='no-results'>No results for {filterDesc}.</p>
+        )}
         {filtered.length > SHOW_BY_DEFAULT && !showAll && (
           <button
             type='button'

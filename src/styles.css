@@ -206,6 +206,7 @@ a {
 
 .hero-content,
 .course,
+.about,
 .faq,
 .heading,
 .filters {
@@ -433,6 +434,15 @@ a {
   background-color: #334155;
 }
 
+.about {
+  padding: 0 40px;
+  line-height: 1.5;
+}
+@media (max-width: 450px) {
+  .about {
+    padding: 0 20px;
+  }
+}
 .faq {
   display: flex;
   gap: 20px;
@@ -459,7 +469,6 @@ a {
 .filters {
   display: flex;
   gap: 20px;
-  flex-wrap: wrap;
 }
 .filter-wrapper {
   display: flex;
@@ -479,9 +488,29 @@ a {
 .filter-courses {
   flex: auto;
 }
+.no-results {
+  display: flex;
+  height: 300px;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  padding: 40px;
+  padding-top: 20px;
+}
 .show-all-btn {
   display: block;
   margin: 20px auto 40px;
+}
+@media (max-width: 600px) {
+  .filters {
+    flex-direction: column;
+  }
+  .no-results {
+    height: auto;
+    justify-content: flex-start;
+  }
 }
 
 /* TEMP */

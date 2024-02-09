@@ -44,6 +44,8 @@ type Filter =
   | { type: 'match'; subject?: string; number?: CourseNumber }
   | { type: 'range'; subject: string; lower: string; upper: string }
 
+const SHOW_BY_DEFAULT = 10
+
 export function App () {
   const [distributions, setDistributions] = useState<Distributions>([
     {
@@ -57,6 +59,7 @@ export function App () {
   )
   const [filter, setFilter] = useState('')
   const [sort, setSort] = useState<'alpha' | 'gpa'>('alpha')
+  const [showAll, setShowAll] = useState(false)
 
   useEffect(() => {
     cacheFirstFetch(SOURCE_URL, r =>
@@ -78,46 +81,74 @@ export function App () {
     }
   }, [contributeOpen])
 
-  const filters = useMemo(
-    () =>
-      Array.from(
-        filter
-          .toUpperCase()
-          .matchAll(
-            /([A-Z]+)\s*(\d+[A-Z]*(?:\s+TO\s+\d+[A-Z]*)?(?:\s*(?:,|\bOR\b)\s*\d+[A-Z]*(?:\s+TO\s+\d+[A-Z]*)?)*)|([A-Z]+)|(\d+[A-Z]*)/g
-          ),
-        ([, subject, numbers, matchSubject, matchNumber]): Filter[] =>
-          numbers
-            ? numbers.split(/,|\bOR\b/).map((part): Filter => {
-                const [lower, upper] = part.split(/\bTO\b/)
-                if (upper) {
-                  return {
-                    type: 'range',
-                    subject,
-                    lower: lower.trim(),
-                    upper: upper.trim()
-                  }
-                } else {
-                  return {
-                    type: 'match',
-                    subject,
-                    number: splitNumber(part.trim())
-                  }
+  const testFilter = useMemo(() => {
+    const filters = Array.from(
+      filter
+        .toUpperCase()
+        .matchAll(
+          /([A-Z]+)\s*(\d+[A-Z]*(?:\s+TO\s+\d+[A-Z]*)?(?:\s*(?:,|\bOR\b)\s*\d+[A-Z]*(?:\s+TO\s+\d+[A-Z]*)?)*)|([A-Z]+)|(\d+[A-Z]*)/g
+        ),
+      ([, subject, numbers, matchSubject, matchNumber]): Filter[] =>
+        numbers
+          ? numbers.split(/,|\bOR\b/).map((part): Filter => {
+              const [lower, upper] = part.split(/\bTO\b/)
+              if (upper) {
+                return {
+                  type: 'range',
+                  subject,
+                  lower: lower.trim(),
+                  upper: upper.trim()
                 }
-              })
-            : [
-                {
+              } else {
+                return {
                   type: 'match',
-                  subject: matchSubject,
-                  number:
-                    matchNumber !== undefined
-                      ? splitNumber(matchNumber)
-                      : undefined
+                  subject,
+                  number: splitNumber(part.trim())
                 }
-              ]
-      ).flat(),
-    [filter]
-  )
+              }
+            })
+          : [
+              {
+                type: 'match',
+                subject: matchSubject,
+                number:
+                  matchNumber !== undefined
+                    ? splitNumber(matchNumber)
+                    : undefined
+              }
+            ]
+    ).flat()
+
+    if (filters.length > 0) {
+      return (course: string) => {
+        const [subject, number] = course.split(' ')
+        for (const filter of filters) {
+          if (filter.subject !== undefined && filter.subject !== subject) {
+            continue
+          }
+          if (filter.type === 'match') {
+            const split = splitNumber(number)
+            if (
+              filter.number === undefined ||
+              (filter.number.number === split.number &&
+                (filter.number.suffix === undefined ||
+                  filter.number.suffix === split.suffix))
+            ) {
+              return true
+            }
+          } else if (
+            courseCodeComparator.compare(filter.lower, number) <= 0 &&
+            courseCodeComparator.compare(number, filter.upper) <= 0
+          ) {
+            return true
+          }
+        }
+        return false
+      }
+    } else {
+      return () => true
+    }
+  }, [filter])
 
   const sorted = useMemo(
     () =>
@@ -132,6 +163,10 @@ export function App () {
         : distributions,
 
     [distributions, sort]
+  )
+  const filtered = useMemo(
+    () => sorted.filter(({ course }) => testFilter(course)),
+    [sorted, testFilter]
   )
 
   return (
@@ -233,7 +268,10 @@ export function App () {
               className='filter'
               placeholder='Example: CSE 30, 100 to 190, ECE 101, 111'
               value={filter}
-              onChange={e => setFilter(e.currentTarget.value)}
+              onChange={e => {
+                setFilter(e.currentTarget.value)
+                setShowAll(false)
+              }}
             />
           </label>
           <label className='filter-wrapper'>
@@ -241,53 +279,41 @@ export function App () {
             <select
               className='filter'
               defaultValue={sort}
-              onChange={e =>
-                (e.currentTarget.value === 'alpha' ||
-                  e.currentTarget.value === 'gpa') &&
-                setSort(e.currentTarget.value)
-              }
+              onChange={e => {
+                if (
+                  e.currentTarget.value === 'alpha' ||
+                  e.currentTarget.value === 'gpa'
+                ) {
+                  setSort(e.currentTarget.value)
+                  setShowAll(false)
+                }
+              }}
             >
               <option value='alpha'>Alphabetical</option>
               <option value='gpa'>Average GPA</option>
             </select>
           </label>
         </div>
-        {sorted.map(({ course, professors }) => {
-          let visible = true
-          pass: if (filters.length > 0) {
-            const [subject, number] = course.split(' ')
-            for (const filter of filters) {
-              if (filter.subject !== undefined && filter.subject !== subject) {
-                continue
-              }
-              if (filter.type === 'match') {
-                const split = splitNumber(number)
-                if (
-                  filter.number === undefined ||
-                  (filter.number.number === split.number &&
-                    (filter.number.suffix === undefined ||
-                      filter.number.suffix === split.suffix))
-                ) {
-                  break pass
-                }
-              } else if (
-                courseCodeComparator.compare(filter.lower, number) <= 0 &&
-                courseCodeComparator.compare(number, filter.upper) <= 0
-              ) {
-                break pass
-              }
-            }
-            visible = false
-          }
-          return (
-            <Course
-              course={course}
-              professors={professors}
-              visible={visible}
-              key={`${course}\n${professors[0].last},${professors[0].first}`}
-            />
-          )
-        })}
+        {filtered
+          .slice(0, showAll ? undefined : SHOW_BY_DEFAULT)
+          .map(({ course, professors }) => {
+            return (
+              <Course
+                course={course}
+                professors={professors}
+                key={`${course}\n${professors[0].last},${professors[0].first}`}
+              />
+            )
+          })}
+        {filtered.length > SHOW_BY_DEFAULT && !showAll && (
+          <button
+            type='button'
+            className='button show-all-btn'
+            onClick={() => setShowAll(true)}
+          >
+            Show all {filtered.length}
+          </button>
+        )}
       </main>
       <Modal open={contributeOpen} onClose={() => setContributeOpen(false)}>
         <h1 className='contribute-title' id='contribute'>

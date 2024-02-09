@@ -478,6 +478,10 @@ a {
 .filter-courses {
   flex: auto;
 }
+.show-all-btn {
+  display: block;
+  margin: 20px auto 40px;
+}
 
 /* TEMP */
 pre {

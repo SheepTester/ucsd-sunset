@@ -21,7 +21,7 @@ function createSubmitTrigger () {
 }
 
 /**
- * md5 hash then a salted HMAC SHA256 hash. Double hashing is probably not
+ * md5 hash then a salted HMAC-SHA256 hash. Double hashing is probably not
  * secure (it makes it easier for me to migrate the hashes to HMAC) but
  * considering the space of potential UCSD usernames being only around 100k, it
  * is probably not a big deal.

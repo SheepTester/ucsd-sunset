@@ -24,7 +24,6 @@ export type Distributions = {
     first: string
     last: string
     averageGpa: number
-    contributors: number
     terms: {
       term: Term
       distributions: {
@@ -165,7 +164,6 @@ export function parseDistributions (tsv: string): ParseResult {
                 first,
                 last,
                 averageGpa: sumGpa / countGpa || 0,
-                contributors: countGpa,
                 terms
               }
             })

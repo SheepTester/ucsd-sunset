@@ -50,7 +50,15 @@ export function App () {
   const [distributions, setDistributions] = useState<Distributions>([
     {
       course: '',
-      professors: [{ first: 'Loading...', last: '', averageGpa: 0, terms: [] }]
+      professors: [
+        {
+          first: 'Loading...',
+          last: '',
+          averageGpa: 0,
+          contributors: 0,
+          terms: []
+        }
+      ]
     }
   ])
   const [contributorCount, setContributorCount] = useState(0)
@@ -58,7 +66,7 @@ export function App () {
     window.location.hash === '#contribute'
   )
   const [filter, setFilter] = useState('')
-  const [sort, setSort] = useState<'alpha' | 'gpa'>('alpha')
+  const [sort, setSort] = useState<'alpha' | 'gpa' | 'contributors'>('alpha')
   const [showAll, setShowAll] = useState(false)
 
   useEffect(() => {
@@ -91,32 +99,30 @@ export function App () {
       ([, subject, numbers, matchSubject, matchNumber]): Filter[] =>
         numbers
           ? numbers.split(/,|\bOR\b/).map((part): Filter => {
-              const [lower, upper] = part.split(/\bTO\b/)
-              if (upper) {
-                return {
-                  type: 'range',
-                  subject,
-                  lower: lower.trim(),
-                  upper: upper.trim()
-                }
-              } else {
-                return {
-                  type: 'match',
-                  subject,
-                  number: splitNumber(part.trim())
-                }
+            const [lower, upper] = part.split(/\bTO\b/)
+            if (upper) {
+              return {
+                type: 'range',
+                subject,
+                lower: lower.trim(),
+                upper: upper.trim()
               }
-            })
-          : [
-              {
+            } else {
+              return {
                 type: 'match',
-                subject: matchSubject,
-                number:
-                  matchNumber !== undefined
-                    ? splitNumber(matchNumber)
-                    : undefined
+                subject,
+                number: splitNumber(part.trim())
               }
-            ]
+            }
+          })
+          : [
+            {
+              type: 'match',
+              subject: matchSubject,
+              number:
+                matchNumber !== undefined ? splitNumber(matchNumber) : undefined
+            }
+          ]
     ).flat()
 
     if (filters.length > 0) {
@@ -151,10 +157,10 @@ export function App () {
             filter.type === 'range'
               ? `${filter.subject} ${filter.lower} to ${filter.upper}`
               : filter.subject !== undefined
-              ? `${filter.subject} ${filter.number?.number ?? 'courses'}${
+                ? `${filter.subject} ${filter.number?.number ?? 'courses'}${
                   filter.number?.suffix ?? ''
                 }`
-              : `courses numbered ${filter.number?.number ?? ''}${
+                : `courses numbered ${filter.number?.number ?? ''}${
                   filter.number?.suffix ?? ''
                 }`
           )
@@ -172,13 +178,22 @@ export function App () {
     () =>
       sort === 'gpa'
         ? distributions
+          .flatMap(({ course, professors }) =>
+            professors.map(prof => ({ course, professors: [prof] }))
+          )
+          .sort(
+            (a, b) => b.professors[0].averageGpa - a.professors[0].averageGpa
+          )
+        : sort === 'contributors'
+          ? distributions
             .flatMap(({ course, professors }) =>
               professors.map(prof => ({ course, professors: [prof] }))
             )
             .sort(
-              (a, b) => b.professors[0].averageGpa - a.professors[0].averageGpa
+              (a, b) =>
+                b.professors[0].contributors - a.professors[0].contributors
             )
-        : distributions,
+          : distributions,
 
     [distributions, sort]
   )
@@ -317,7 +332,8 @@ export function App () {
               onChange={e => {
                 if (
                   e.currentTarget.value === 'alpha' ||
-                  e.currentTarget.value === 'gpa'
+                  e.currentTarget.value === 'gpa' ||
+                  e.currentTarget.value === 'contributors'
                 ) {
                   setSort(e.currentTarget.value)
                   setShowAll(false)
@@ -326,6 +342,7 @@ export function App () {
             >
               <option value='alpha'>Alphabetical</option>
               <option value='gpa'>Average GPA</option>
+              <option value='contributors'>Contributors</option>
             </select>
           </label>
         </div>

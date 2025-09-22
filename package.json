@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "🌅 SunSET for UCSD: A crowd-sourced dataset of grade distributions submitted by students from their academic histories, to replace CAPEs' \"Grades Students Received,\" which SETs no longer publish.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "build": "yarn build:bookmarklet && yarn build:app",
     "build:app": "cp -a static/. dist/ && esbuild --bundle src/index.tsx --loader:.raw.js=text --loader:.svg=file --outdir=dist --supported:nesting=false --minify && find dist/ -type f | sed 's/dist\\//https:\\/\\/sheeptester.github.io\\/ucsd-sunset\\//' > dist/sitemap.txt",
@@ -27,6 +28,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@types/node": "^24.5.2",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
     "esbuild": "^0.19.10",

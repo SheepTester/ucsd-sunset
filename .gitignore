@@ -4,3 +4,4 @@ yarn.lock
 
 dist/
 src/data/inject.raw.js
+scripts/cleanup.tsv

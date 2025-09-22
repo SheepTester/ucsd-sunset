@@ -55,6 +55,9 @@ export function parseDistributions (tsv: string): ParseResult {
     if (
       distribution.includes(
         'Grade Distribution is not available for classes with 10 students or less.'
+      ) ||
+      distribution.includes(
+        'Grade Distribution is temporarily unavailable for this course.'
       )
     ) {
       continue

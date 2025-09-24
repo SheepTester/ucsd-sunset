@@ -283,7 +283,7 @@ export function App () {
             <input
               type='search'
               className='filter'
-              placeholder='Example: CSE, ECE 109, Styler'
+              placeholder='Examples: LIGM 1A, CSE, Styler'
               value={filter}
               onChange={e => {
                 setFilter(e.currentTarget.value)

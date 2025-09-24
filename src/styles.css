@@ -314,6 +314,11 @@ a {
   font-size: 18px;
   margin: 0;
 }
+.match {
+  background-color: #e7e8f0;
+  color: #0b0e23;
+  border-radius: 5px;
+}
 .distribution {
   display: flex;
   flex-direction: column;

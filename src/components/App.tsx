@@ -11,6 +11,8 @@ import { Course } from './Course'
 import { JavaScriptUrl } from './JavaScriptUrl'
 import { Modal } from './Modal'
 import { CourseNumber, splitNumber } from '../util/course-codes.js'
+import { matchFilter, parseFilter } from '../util/course-filter.js'
+import { score } from '../util/search.js'
 
 /**
  * Tries loading the response from cache, then calls `callback` when it's
@@ -40,10 +42,6 @@ async function cacheFirstFetch (
   }
 }
 
-type Filter =
-  | { type: 'match'; subject?: string; number?: CourseNumber }
-  | { type: 'range'; subject: string; lower: string; upper: string }
-
 const SHOW_BY_DEFAULT = 10
 
 export function App () {
@@ -58,7 +56,7 @@ export function App () {
     window.location.hash === '#contribute'
   )
   const [filter, setFilter] = useState('')
-  const [sort, setSort] = useState<'alpha' | 'gpa'>('alpha')
+  const [sort, setSort] = useState<'alpha' | 'gpa' | 'sort-score'>('alpha')
   const [showAll, setShowAll] = useState(false)
 
   useEffect(() => {
@@ -81,110 +79,94 @@ export function App () {
     }
   }, [contributeOpen])
 
-  const { testFilter, filterDesc } = useMemo(() => {
-    const filters = Array.from(
-      filter
-        .toUpperCase()
-        .matchAll(
-          /([A-Z]+)\s*(\d+[A-Z]*(?:\s+TO\s+\d+[A-Z]*)?(?:\s*(?:,|\bOR\b)\s*\d+[A-Z]*(?:\s+TO\s+\d+[A-Z]*)?)*)|([A-Z]+)|(\d+[A-Z]*)/g
-        ),
-      ([, subject, numbers, matchSubject, matchNumber]): Filter[] =>
-        numbers
-          ? numbers.split(/,|\bOR\b/).map((part): Filter => {
-              const [lower, upper] = part.split(/\bTO\b/)
-              if (upper) {
-                return {
-                  type: 'range',
-                  subject,
-                  lower: lower.trim(),
-                  upper: upper.trim()
-                }
-              } else {
-                return {
-                  type: 'match',
-                  subject,
-                  number: splitNumber(part.trim())
-                }
-              }
-            })
-          : [
-              {
-                type: 'match',
-                subject: matchSubject,
-                number:
-                  matchNumber !== undefined
-                    ? splitNumber(matchNumber)
-                    : undefined
-              }
-            ]
-    ).flat()
-
-    if (filters.length > 0) {
-      return {
-        testFilter: (course: string) => {
-          const [subject, number] = course.split(' ')
-          for (const filter of filters) {
-            if (filter.subject !== undefined && filter.subject !== subject) {
-              continue
-            }
-            if (filter.type === 'match') {
-              const split = splitNumber(number)
-              if (
-                filter.number === undefined ||
-                (filter.number.number === split.number &&
-                  (filter.number.suffix === undefined ||
-                    filter.number.suffix === split.suffix))
-              ) {
-                return true
-              }
-            } else if (
-              courseCodeComparator.compare(filter.lower, number) <= 0 &&
-              courseCodeComparator.compare(number, filter.upper) <= 0
-            ) {
-              return true
-            }
-          }
-          return false
-        },
-        filterDesc: filters
-          .map(filter =>
-            filter.type === 'range'
-              ? `${filter.subject} ${filter.lower} to ${filter.upper}`
-              : filter.subject !== undefined
-              ? `${filter.subject} ${filter.number?.number ?? 'courses'}${
-                  filter.number?.suffix ?? ''
-                }`
-              : `courses numbered ${filter.number?.number ?? ''}${
-                  filter.number?.suffix ?? ''
-                }`
-          )
-          .join(' or ')
-      }
-    } else {
-      return {
-        testFilter: () => true,
-        filterDesc: ''
-      }
+  const scoredDistributions = useMemo(() => {
+    if (!filter) {
+      return distributions.map(({ course, professors }) => ({
+        course,
+        professors: professors.map(professor => ({
+          ...professor,
+          match: null
+        })),
+        score: 0,
+        showIfNotScoreSorting: true,
+        match: null
+      }))
     }
-  }, [filter])
+    const query = filter.toLowerCase()
+    return distributions.flatMap(({ course, professors }) => {
+      const courseMatch = score(course, query)
+      const matchedProfs = Map.groupBy(
+        professors.map(professor => {
+          const professorMatch = score(
+            `${professor.first} ${professor.last}`,
+            query
+          )
+          const professorLastMatch = score(professor.last, query)
+          if (professorLastMatch.match) {
+            professorLastMatch.match.start += professor.first.length + 1
+            professorLastMatch.match.end += professor.first.length + 1
+          }
+          return {
+            ...professor,
+            match:
+              professorMatch.score > professorLastMatch.score
+                ? professorMatch.match
+                : professorLastMatch.match,
+            score: Math.max(professorMatch.score, professorLastMatch.score),
+            matchesWord: professorMatch.matchesWord
+          }
+        }),
+        scored => scored.score >= courseMatch.score
+      )
+      const notBetter = matchedProfs.get(false) ?? []
+      return [
+        ...(matchedProfs.get(true) ?? []).map(professor => ({
+          course,
+          professors: [professor],
+          score: professor.score,
+          showIfNotScoreSorting:
+            courseMatch.matchesWord || professor.matchesWord,
+          match: courseMatch.match
+        })),
+        ...(notBetter.length > 0
+          ? [
+            {
+              course,
+              professors: notBetter,
+              score: courseMatch.score,
+              showIfNotScoreSorting: courseMatch.matchesWord,
+              match: courseMatch.match
+            }
+          ]
+          : [])
+      ]
+    })
+  }, [distributions, filter])
 
   const sorted = useMemo(
     () =>
       sort === 'gpa'
-        ? distributions
-            .flatMap(({ course, professors }) =>
-              professors.map(prof => ({ course, professors: [prof] }))
-            )
-            .sort(
-              (a, b) => b.professors[0].averageGpa - a.professors[0].averageGpa
-            )
-        : distributions,
-
-    [distributions, sort]
-  )
-  const filtered = useMemo(
-    () => sorted.filter(({ course }) => testFilter(course)),
-    [sorted, testFilter]
+        ? scoredDistributions
+          .flatMap(({ course, professors, showIfNotScoreSorting, ...rest }) =>
+            showIfNotScoreSorting
+              ? professors.map(prof => ({
+                course,
+                professors: [prof],
+                ...rest
+              }))
+              : []
+          )
+          .toSorted(
+            (a, b) => b.professors[0].averageGpa - a.professors[0].averageGpa
+          )
+        : sort === 'sort-score'
+          ? scoredDistributions
+            .filter(({ score }) => score > 0)
+            .toSorted((a, b) => b.score - a.score)
+          : scoredDistributions.filter(
+            ({ showIfNotScoreSorting }) => showIfNotScoreSorting
+          ),
+    [scoredDistributions, sort]
   )
 
   return (
@@ -297,14 +279,21 @@ export function App () {
         <h1 className='heading'>Grades received</h1>
         <div className='filters'>
           <label className='filter-wrapper filter-courses'>
-            <p className='label'>Filter courses</p>
+            <p className='label'>Search courses and professors</p>
             <input
               type='search'
               className='filter'
-              placeholder='Example: CSE 30, 100 to 190, ECE 101, 111'
+              placeholder='Example: CSE, ECE 109, Styler'
               value={filter}
               onChange={e => {
                 setFilter(e.currentTarget.value)
+                if (e.currentTarget.value.length > 0) {
+                  if (filter === '') {
+                    setSort('sort-score')
+                  }
+                } else if (sort === 'sort-score') {
+                  setSort('alpha')
+                }
                 setShowAll(false)
               }}
             />
@@ -313,10 +302,11 @@ export function App () {
             <p className='label'>Sort by</p>
             <select
               className='filter'
-              defaultValue={sort}
+              value={sort}
               onChange={e => {
                 if (
                   e.currentTarget.value === 'alpha' ||
+                  e.currentTarget.value === 'sort-score' ||
                   e.currentTarget.value === 'gpa'
                 ) {
                   setSort(e.currentTarget.value)
@@ -324,32 +314,46 @@ export function App () {
                 }
               }}
             >
+              {filter !== '' ? (
+                <option value='sort-score'>Best match</option>
+              ) : null}
               <option value='alpha'>Alphabetical</option>
               <option value='gpa'>Average GPA</option>
             </select>
           </label>
         </div>
-        {filtered
+        {sorted
           .slice(0, showAll ? undefined : SHOW_BY_DEFAULT)
-          .map(({ course, professors }) => {
+          .map(({ course, professors, match }) => {
             return (
               <Course
                 course={course}
                 professors={professors}
+                match={match}
+                professorMatches={
+                  filter !== ''
+                    ? professors.map(professor => professor.match)
+                    : undefined
+                }
                 key={`${course}\n${professors[0].last},${professors[0].first}`}
               />
             )
           })}
-        {filtered.length === 0 && (
-          <p className='no-results'>No results for {filterDesc}.</p>
+        {sorted.length === 0 && (
+          <p className='no-results'>
+            No results.
+            {filter !== '' && sort !== 'sort-score'
+              ? ' Partial matches were excluded.'
+              : null}
+          </p>
         )}
-        {filtered.length > SHOW_BY_DEFAULT && !showAll && (
+        {sorted.length > SHOW_BY_DEFAULT && !showAll && (
           <button
             type='button'
             className='button show-all-btn'
             onClick={() => setShowAll(true)}
           >
-            Show all {filtered.length}
+            Show all {sorted.length}
           </button>
         )}
       </main>

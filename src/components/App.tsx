@@ -11,8 +11,13 @@ import { Course } from './Course'
 import { JavaScriptUrl } from './JavaScriptUrl'
 import { Modal } from './Modal'
 import { CourseNumber, splitNumber } from '../util/course-codes.js'
-import { matchFilter, parseFilter } from '../util/course-filter.js'
+import {
+  displayFilters,
+  matchFilter,
+  parseFilter
+} from '../util/course-filter.js'
 import { score } from '../util/search.js'
+import { templates } from '../data/templates.js'
 
 /**
  * Tries loading the response from cache, then calls `callback` when it's
@@ -79,6 +84,11 @@ export function App () {
     }
   }, [contributeOpen])
 
+  const structuredFilter = useMemo(
+    () => (filter.startsWith('>') ? parseFilter(filter.slice(1)) : null),
+    [filter]
+  )
+
   const scoredDistributions = useMemo(() => {
     if (!filter) {
       return distributions.map(({ course, professors }) => ({
@@ -91,6 +101,20 @@ export function App () {
         showIfNotScoreSorting: true,
         match: null
       }))
+    }
+    if (structuredFilter) {
+      return distributions
+        .filter(({ course }) => matchFilter(structuredFilter, course))
+        .map(({ course, professors }) => ({
+          course,
+          professors: professors.map(professor => ({
+            ...professor,
+            match: null
+          })),
+          score: 0,
+          showIfNotScoreSorting: true,
+          match: null
+        }))
     }
     const query = filter.toLowerCase()
     return distributions.flatMap(({ course, professors }) => {
@@ -141,7 +165,7 @@ export function App () {
           : [])
       ]
     })
-  }, [distributions, filter])
+  }, [distributions, filter, structuredFilter])
 
   const sorted = useMemo(
     () =>
@@ -281,14 +305,18 @@ export function App () {
           <label className='filter-wrapper filter-courses'>
             <p className='label'>Search courses and professors</p>
             <input
+              name='course-professor'
               type='search'
               className='filter'
               placeholder='Examples: LIGM 1A, CSE, Styler'
               value={filter}
               onChange={e => {
                 setFilter(e.currentTarget.value)
-                if (e.currentTarget.value.length > 0) {
-                  if (filter === '') {
+                if (
+                  e.currentTarget.value.length > 0 &&
+                  !e.currentTarget.value.startsWith('>')
+                ) {
+                  if (filter === '' || filter.startsWith('>')) {
                     setSort('sort-score')
                   }
                 } else if (sort === 'sort-score') {
@@ -299,9 +327,37 @@ export function App () {
             />
           </label>
           <label className='filter-wrapper'>
+            <p className='label'>Use a template</p>
+            <select
+              className='filter'
+              name='template'
+              value={
+                templates.find(template => '> ' + template.query === filter)
+                  ?.query ?? ''
+              }
+              onChange={e => {
+                setFilter('> ' + e.currentTarget.value)
+                setShowAll(false)
+                if (sort === 'sort-score') {
+                  setSort('alpha')
+                }
+              }}
+            >
+              <option value='' disabled>
+                Select a template
+              </option>
+              {templates.map(template => (
+                <option key={template.query} value={template.query}>
+                  {template.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className='filter-wrapper'>
             <p className='label'>Sort by</p>
             <select
               className='filter'
+              name='sort'
               value={sort}
               onChange={e => {
                 if (
@@ -314,7 +370,7 @@ export function App () {
                 }
               }}
             >
-              {filter !== '' ? (
+              {filter !== '' && !filter.startsWith('>') ? (
                 <option value='sort-score'>Best match</option>
               ) : null}
               <option value='alpha'>Alphabetical</option>
@@ -341,10 +397,13 @@ export function App () {
           })}
         {sorted.length === 0 && (
           <p className='no-results'>
-            No results.
-            {filter !== '' && sort !== 'sort-score'
-              ? ' Partial matches were excluded.'
-              : null}
+            {structuredFilter
+              ? structuredFilter.length === 0
+                ? "Your course filter doesn't specify any course subjects."
+                : `No results for ${displayFilters(structuredFilter)}.`
+              : filter !== '' && sort !== 'sort-score'
+                ? 'No results. Partial matches were excluded.'
+                : 'No results.'}
           </p>
         )}
         {sorted.length > SHOW_BY_DEFAULT && !showAll && (

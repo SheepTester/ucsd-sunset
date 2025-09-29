@@ -508,7 +508,7 @@ a {
   display: block;
   margin: 20px auto 40px;
 }
-@media (max-width: 600px) {
+@media (max-width: 900px) {
   .filters {
     flex-direction: column;
   }

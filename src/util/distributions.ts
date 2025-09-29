@@ -38,6 +38,12 @@ export const courseCodeComparator = new Intl.Collator('en-US', {
   numeric: true
 })
 
+const ignoreList = new Set([
+  // For some reason, a bunch of out-of-order duplicate grades were prepended to
+  // their distributions. Not sure if malicious.
+  '1f911becaea9f6231357e56466e9f8577c83919ce3017fad6852f4b9e7f4bec7'
+])
+
 export type ParseResult = {
   distributions: Distributions
   contributors: number
@@ -51,6 +57,9 @@ export function parseDistributions (tsv: string): ParseResult {
   const contributors = new Set<string>()
   for (const row of tsv.trim().split(/\r?\n/).slice(1)) {
     const [, userId, term, course, professor, distribution] = row.split('\t')
+    if (ignoreList.has(userId)) {
+      continue
+    }
     contributors.add(userId)
     if (
       distribution.includes(
@@ -62,10 +71,16 @@ export function parseDistributions (tsv: string): ParseResult {
     ) {
       continue
     }
-    const entries = distribution.split(', ').map(entry => {
-      const [grade, count] = entry.split(':')
-      return [grade, +count] as const
-    })
+    // Convert to map and back because sometimes people's entries repeat a
+    // distribution twice, which doubles their total
+    const entries = Array.from(
+      new Map(
+        distribution.split(', ').map(entry => {
+          const [grade, count] = entry.split(':')
+          return [grade, +count] as const
+        })
+      )
+    )
     const grades = entries.filter(([grade]) => {
       if (grade === 'Total Students' || grade === 'Class GPA') {
         return false
@@ -94,10 +109,24 @@ export function parseDistributions (tsv: string): ParseResult {
       actualAvgGpa[1] !== Math.round(Math.round(averageGpa * 1000) / 10) / 100
     ) {
       console.warn(
+        userId.slice(0, 8),
+        course,
         'Calculated average GPA was wrong. Expected:',
         actualAvgGpa[1],
         'Actual:',
         averageGpa
+      )
+    }
+    const total = grades.reduce((cum, curr) => cum + curr[1], 0)
+    const actualTotal = entries.find(([grade]) => grade === 'Total Students')
+    if (actualTotal && actualTotal[1] !== total) {
+      console.warn(
+        userId.slice(0, 8),
+        course,
+        "Distribution doesn't add up. Reported total:",
+        actualTotal[1],
+        'Calculated:',
+        total
       )
     }
     // Assumes that the spreadsheet rows are in chronological order, so later
@@ -107,7 +136,7 @@ export function parseDistributions (tsv: string): ParseResult {
     distributions[course][professor][term] ??= {}
     distributions[course][professor][term][userId] = {
       grades: Object.fromEntries(grades),
-      total: grades.reduce((cum, curr) => cum + curr[1], 0),
+      total,
       id: grades
         .map(([grade, count]) => `${grade}:${count}`)
         .sort()

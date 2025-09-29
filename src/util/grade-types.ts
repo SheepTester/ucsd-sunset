@@ -15,6 +15,7 @@ export const gradeTypes = [
   'S',
   'U',
   'I',
+  'IP',
   'W',
   'Blank'
 ]
@@ -24,7 +25,7 @@ export const gradeGroups = [
   { name: 'C', grades: ['C+', 'C', 'C-'] },
   { name: 'D', grades: ['D'] },
   { name: 'F', grades: ['F'] },
-  { name: 'Other', grades: ['P', 'NP', 'S', 'U', 'I', 'W', 'Blank'] }
+  { name: 'Other', grades: ['P', 'NP', 'S', 'U', 'I', 'IP', 'W', 'Blank'] }
 ]
 export const gpas: Record<string, number> = {
   'A+': 4,

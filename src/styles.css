@@ -98,6 +98,7 @@ a {
   width: 100%;
   max-width: 1080px;
   padding: 40px;
+  scroll-padding: 40px;
   box-sizing: border-box;
   overflow: auto;
   transform: translateY(20px);
@@ -124,6 +125,19 @@ a {
   height: 48px;
   &:hover {
     background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+.tss-notice {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 15px;
+  background-color: rgba(255, 255, 255, 0.05);
+
+  & p {
+    margin: 0;
   }
 }
 .instructions {

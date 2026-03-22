@@ -41,7 +41,11 @@ export const courseCodeComparator = new Intl.Collator('en-US', {
 const ignoreList = new Set([
   // For some reason, a bunch of out-of-order duplicate grades were prepended to
   // their distributions. Not sure if malicious.
-  '1f911becaea9f6231357e56466e9f8577c83919ce3017fad6852f4b9e7f4bec7'
+  '1f911becaea9f6231357e56466e9f8577c83919ce3017fad6852f4b9e7f4bec7',
+  // There are inconsistencies in GPA/student count. Seems like some entries had
+  // failing grades replaced with a copy of the other grades. Not sure if
+  // malicious.
+  'a7a52e09a57e9a32b30f4245b6dc4b4064a6d3ae62dd2207c1eb557e7f38c102'
 ])
 
 export type ParseResult = {

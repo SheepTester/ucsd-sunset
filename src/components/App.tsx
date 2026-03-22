@@ -251,10 +251,10 @@ export function App () {
             </p>
           </div>
           <div className='faq-entry'>
-            <h2 className='question'>Why aren't all classes on here?</h2>
+            <h2 className='question'>Why aren&rsquo;t all classes on here?</h2>
             <p>
               This is a crowdsourcing effort, so if no one shares data for a
-              class, the class won't be listed here. You can help by{' '}
+              class, the class won&rsquo;t be listed here. You can help by{' '}
               <a
                 href='#contribute'
                 className='link'
@@ -423,6 +423,24 @@ export function App () {
             <CloseIcon />
           </button>
         </h1>
+        <div className='tss-notice'>
+          <p>
+            <strong>Spring 2026 may be your last chance to contribute.</strong>
+          </p>
+          <p>
+            UCSD is{' '}
+            <a
+              className='link'
+              href='https://docs.google.com/document/d/1fHj8FpxVfecCMlojX64OC6fLsoRJNTp4xzrLUsroZ_I/edit'
+              target='_blank'
+            >
+              replacing Academic History
+            </a>{' '}
+            with third-party software. There is no guarantee that the vendor
+            will preserve the ability to view your classes&rsquo; grade
+            distributions, so contribute them now before it&rsquo;s too late!
+          </p>
+        </div>
         <ol className='instructions'>
           <li>
             <div className='instruction-content'>

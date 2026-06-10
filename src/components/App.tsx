@@ -282,13 +282,14 @@ export function App () {
             </h2>
             <p>
               The raw crowdsourced data are available as a{' '}
-              <a
-                className='link'
-                href='https://docs.google.com/spreadsheets/d/e/2PACX-1vQ6KhjyiPM-rof6fqjBcmp7ygy4Dqr1LQ8uJiAOtR2IoihzQEumx-SHX_KKxLpmYGZksN6QsPPk0DNb/pubhtml'
-              >
+              <a className='link' href={`${SPREADSHEET_BASE}/pubhtml`}>
                 spreadsheet
+              </a>{' '}
+              (
+              <a className='link' href={SOURCE_URL.replace('tsv', 'csv')}>
+                CSV
               </a>
-              . You can find more information about available formats, the
+              ). You can find more information about available formats, the
               project setup, and caveats on the{' '}
               <a
                 className='link'

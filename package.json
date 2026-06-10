@@ -28,6 +28,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@sheeptester/prettier": "^3.9.0",
     "@types/node": "^24.5.2",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",

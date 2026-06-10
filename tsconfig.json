@@ -1,6 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
+    "types": ["node"],
     "module": "esnext",
     "target": "esnext",
     "jsx": "react-jsx",
@@ -9,6 +10,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
-    "noEmit": true
+    "noEmit": true,
+    "noUncheckedSideEffectImports": false
   }
 }

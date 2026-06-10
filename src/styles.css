@@ -223,7 +223,8 @@ a {
 .about,
 .faq,
 .heading,
-.filters {
+.filters,
+.sunset-notice-wrapper {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -235,9 +236,31 @@ a {
   .course,
   .faq,
   .heading,
-  .filters {
+  .filters,
+  .sunset-notice-wrapper {
     padding: 20px;
   }
+}
+
+.sunset-notice-wrapper {
+  display: flex;
+}
+.sunset-notice {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 40px;
+  border-radius: 15px;
+  background-color: #101433;
+}
+.sunset-notice h1 {
+  margin: 0;
+  margin-bottom: 10px;
+}
+.sunset-notice p {
+  margin: 0;
+  line-height: 1.5;
 }
 
 .hero {

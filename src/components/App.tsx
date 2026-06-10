@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import bookmarklet from '../data/inject.raw.js'
-import { SOURCE_URL } from '../urls'
+import { SOURCE_URL, SPREADSHEET_BASE } from '../urls'
 import {
   Distributions,
   courseCodeComparator,
@@ -221,6 +221,38 @@ export function App () {
         </div>
       </header>
       <main>
+        <div className='sunset-notice-wrapper'>
+          <div className='sunset-notice'>
+            <h1>Sunsetting SunSET</h1>
+            <p>
+              By request of the university, SunSET will be taken down by the end
+              of the summer.
+            </p>
+            <p>
+              Official campus resources like{' '}
+              <a
+                href='https://academicaffairs.ucsd.edu/Modules/Evals/SET/Reports/Search.aspx'
+                className='link'
+              >
+                SETs
+              </a>{' '}
+              and{' '}
+              <a
+                href='https://qa-as.ucsd.edu/Home/InstructorGradeArchive'
+                className='link'
+              >
+                A.S.&rsquo;s website
+              </a>{' '}
+              now have grade distributions. For plus/minus grades, this{' '}
+              <a href='https://myclassgrades.com/school/ucsd' className='link'>
+                UCSC student-generated project
+              </a>{' '}
+              also has grade distributions for UCSD, obtained from the
+              California Public Records Act.
+              {/* Source: https://www.reddit.com/r/UCSD/comments/1s8vy6y/cleaner_way_to_see_ucsd_grade_distributions/ */}
+            </p>
+          </div>
+        </div>
         <h1 className='heading'>About</h1>
         <p className='about'>
           When UCSD replaced{' '}

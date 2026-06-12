@@ -46,14 +46,16 @@ a {
   padding: 10px 20px;
   border-radius: 10px;
   font-weight: bold;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1); */
   transition: box-shadow 0.2s;
-  &:hover {
+  /* &:hover {
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   }
   &:active {
     box-shadow: 0 0 0 rgba(0, 0, 0, 0.3);
-  }
+  } */
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .modal {
@@ -563,4 +565,10 @@ pre {
   margin: 0;
   white-space: pre-wrap;
   border: 1px solid currentColor;
+}
+
+.course,
+.show-all-btn,
+.faq-entry del {
+  display: none !important;
 }

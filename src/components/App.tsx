@@ -1,16 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import bookmarklet from '../data/inject.raw.js'
 import { SOURCE_URL, SPREADSHEET_BASE } from '../urls'
-import {
-  Distributions,
-  courseCodeComparator,
-  parseDistributions
-} from '../util/distributions'
+import { Distributions, parseDistributions } from '../util/distributions'
 import { CloseIcon } from './CloseIcon'
 import { Course } from './Course'
 import { JavaScriptUrl } from './JavaScriptUrl'
 import { Modal } from './Modal'
-import { CourseNumber, splitNumber } from '../util/course-codes.js'
 import {
   displayFilters,
   matchFilter,
@@ -56,7 +51,7 @@ export function App () {
       professors: [{ first: 'Loading...', last: '', averageGpa: 0, terms: [] }]
     }
   ])
-  const [contributorCount, setContributorCount] = useState(0)
+  const [contributorCount, setContributorCount] = useState(478)
   const [contributeOpen, setContributeOpen] = useState(
     window.location.hash === '#contribute'
   )
@@ -208,7 +203,7 @@ export function App () {
             className='button contribute-btn'
             onClick={e => {
               e.preventDefault()
-              setContributeOpen(true)
+              // setContributeOpen(true)
             }}
           >
             Contribute
@@ -225,8 +220,8 @@ export function App () {
           <div className='sunset-notice'>
             <h1>Sunsetting SunSET</h1>
             <p>
-              By request of the university, SunSET will be taken down by the end
-              of the summer.
+              By request of the university,{' '}
+              <strong>SunSET has been taken down</strong>.
             </p>
             <p>
               Official campus resources like{' '}
@@ -313,16 +308,22 @@ export function App () {
               How can I use the crowd&shy;sourced data in my own project?
             </h2>
             <p>
-              The raw crowdsourced data are available as a{' '}
-              <a className='link' href={`${SPREADSHEET_BASE}/pubhtml`}>
-                spreadsheet
-              </a>{' '}
-              (
-              <a className='link' href={SOURCE_URL.replace('tsv', 'csv')}>
-                CSV
-              </a>
-              ). You can find more information about available formats, the
-              project setup, and caveats on the{' '}
+              <strong>
+                The raw crowdsourced data are no longer available.
+              </strong>
+              <del>
+                available as a{' '}
+                <a className='link' href={`${SPREADSHEET_BASE}/pubhtml`}>
+                  spreadsheet
+                </a>{' '}
+                (
+                <a className='link' href={SOURCE_URL.replace('tsv', 'csv')}>
+                  CSV
+                </a>
+                ).
+              </del>{' '}
+              You can find more information about available formats, the project
+              setup, and caveats on the{' '}
               <a
                 className='link'
                 href='https://github.com/SheepTester/ucsd-sunset'
@@ -448,6 +449,7 @@ export function App () {
             Show all {sorted.length}
           </button>
         )}
+        <p className='no-results'>Crowdsourced data are no longer available.</p>
       </main>
       <Modal open={contributeOpen} onClose={() => setContributeOpen(false)}>
         <h1 className='contribute-title' id='contribute'>

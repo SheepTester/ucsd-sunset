@@ -8,7 +8,8 @@ A crowdsourced dataset of grade distributions submitted by students from their a
 
 The crowdsourced dataset is available to view on the [live website][gh-pages]. Click on the "Contribute" button for instructions on how to contribute your classes' grade distributions from your [Academic History][acad-hist].
 
-The raw dataset is also available as a [spreadsheet][pubhtml]. If you want to load it into a program, you can format it as a [CSV][csv] or [TSV][tsv] file to perform your own data analysis and visualization.
+The raw dataset is no longer available.
+<!-- The raw dataset is also available as a [spreadsheet][pubhtml]. If you want to load it into a program, you can format it as a [CSV][csv] or [TSV][tsv] file to perform your own data analysis and visualization. -->
 
 [gh-pages]: https://sheeptester.github.io/ucsd-sunset/
 [pubhtml]: https://docs.google.com/spreadsheets/d/e/2PACX-1vQ6KhjyiPM-rof6fqjBcmp7ygy4Dqr1LQ8uJiAOtR2IoihzQEumx-SHX_KKxLpmYGZksN6QsPPk0DNb/pubhtml
@@ -67,7 +68,6 @@ And here's an architectural diagram:
 ![Architectural diagram](./docs/architecture.png)
 
 1. **Bookmarklet**: To collect data, students run a bookmarklet on Academic History. Bookmarklets are the easiest way for students to run our data collection script, as opposed to a browser extension or userscript.
-
    - **Weakness**: Bookmarklets don't work on mobile, but I don't think there's any alternative that's as user-friendly.
 
    - **Weakness**: Academic History doesn't seem to provide the UCSD email anywhere, so I can't look up the contributor's prior submissions on the spreadsheet. If they submit multiple times, there will be multiple duplicate rows in the spreadsheet.
@@ -75,11 +75,9 @@ And here's an architectural diagram:
 2. **Google Form**: To store the data, students submit the JSON output of the bookmarklet into a [Google Form][form], which requires a UCSD Google account to access. There is a single question for students to paste the data in, and it collects their email to discourage students from misusing the service.
 
    The Google Form has a [Google Apps Script][apps-script] connected that [adds the student-submitted grade distributions into a spreadsheet](./form/Code.gs). This spreadsheet is published to the web, so anyone can download it as a [CSV][csv] or [TSV][tsv] file.
-
    - **Weakness**: The Apps Script might have race conditions as it's adding rows from two submissions at the same time. I haven't tested it, so hopefully it doesn't overwrite rows. Rows per submission may not be contiguous, but that's fine.
 
 3. **Website**: The spreadsheet is accessed directly from the browser rendering the page, and it's parsed into data for a React app to display.
-
    - **Weakness**: The spreadsheet might get very large because duplicate rows aren't removed, and this cost is passed onto end users downloading massive TSVs on every page load. At 18 contributions, the spreadsheet already takes 1.67 seconds to load 19.9 kB of data (but I think 1.4 seconds of this is a fixed cost from Google being Google).
 
 [form]: https://docs.google.com/forms/d/e/1FAIpQLSdRQu1lV9dlmMFYKVqQVC_p9V2oNv3qmAdG1IjsoeGmZ0V9OA/viewform

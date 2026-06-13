@@ -51,7 +51,7 @@ export function App () {
       professors: [{ first: 'Loading...', last: '', averageGpa: 0, terms: [] }]
     }
   ])
-  const [contributorCount, setContributorCount] = useState(478)
+  const [contributorCount, setContributorCount] = useState(479)
   const [contributeOpen, setContributeOpen] = useState(
     window.location.hash === '#contribute'
   )

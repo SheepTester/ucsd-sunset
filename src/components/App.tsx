@@ -44,6 +44,10 @@ async function cacheFirstFetch (
 
 const SHOW_BY_DEFAULT = 10
 
+const takedownDate = new Date(
+  'Fri Jun 12 20:08:03 2026 -0700'
+).toLocaleDateString('en-US', { dateStyle: 'long' })
+
 export function App () {
   const [distributions, setDistributions] = useState<Distributions>([
     {
@@ -221,7 +225,7 @@ export function App () {
             <h1>Sunsetting SunSET</h1>
             <p>
               By request of the university,{' '}
-              <strong>SunSET has been taken down</strong>.
+              <strong>SunSET has been taken down</strong> as of {takedownDate}.
             </p>
             <p>
               Official campus resources like{' '}

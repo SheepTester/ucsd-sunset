@@ -571,4 +571,8 @@ pre {
 .show-all-btn,
 .faq-entry del {
   display: none !important;
+
+  #root:target & {
+    display: block !important;
+  }
 }
